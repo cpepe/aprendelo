@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Aprendelo — Interactive Spanish learning with flashcards, verb conjugation, AI conversation practice, and bilingual booklet builder.">
+    <title>Aprendelo — Learn Spanish</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- ══════════ Navigation ══════════ -->
+    <nav id="main-nav">
+        <div class="nav-brand">
+            <span class="brand-icon">🇪🇸</span>
+            <span class="brand-text">Aprendelo</span>
+        </div>
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-tab="flashcards" id="nav-flashcards">
+                <span class="tab-icon">🃏</span>
+                <span class="tab-label">Flashcards</span>
+            </button>
+            <button class="nav-tab" data-tab="conjugation" id="nav-conjugation">
+                <span class="tab-icon">📝</span>
+                <span class="tab-label">Conjugation</span>
+            </button>
+            <button class="nav-tab" data-tab="chat" id="nav-chat">
+                <span class="tab-icon">💬</span>
+                <span class="tab-label">Chat</span>
+            </button>
+            <button class="nav-tab" data-tab="booklet" id="nav-booklet">
+                <span class="tab-icon">📖</span>
+                <span class="tab-label">Booklet</span>
+            </button>
+        </div>
+    </nav>
+
+    <main id="app-content">
+
+        <!-- ══════════ Flashcards ══════════ -->
+        <section id="section-flashcards" class="tab-section active">
+            <div class="section-header">
+                <h1>Flashcard Practice</h1>
+                <p class="section-subtitle">Click the card to reveal the translation</p>
+            </div>
+            <div class="flashcard-container">
+                <div class="flashcard" id="flashcard" tabindex="0">
+                    <div class="flashcard-inner" id="flashcard-inner">
+                        <div class="flashcard-front">
+                            <span class="card-lang-label">Español</span>
+                            <span class="card-word" id="card-front-word">hola</span>
+                        </div>
+                        <div class="flashcard-back">
+                            <span class="card-lang-label">English</span>
+                            <span class="card-word" id="card-back-word">hello</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flashcard-actions">
+                    <button class="btn btn-primary" id="btn-next-card">
+                        Next Card <span class="btn-arrow">→</span>
+                    </button>
+                </div>
+                <div class="flashcard-hint">
+                    Press <kbd>Space</kbd> to flip · <kbd>→</kbd> for next card
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════ Conjugation ══════════ -->
+        <section id="section-conjugation" class="tab-section">
+            <div class="section-header">
+                <h1>Verb Conjugation</h1>
+                <p class="section-subtitle">Enter a Spanish verb and select a tense</p>
+            </div>
+            <div class="conjugation-container">
+                <form id="conjugation-form" class="input-group-row">
+                    <div class="input-field">
+                        <label for="conj-verb">Verb (infinitive)</label>
+                        <input type="text" id="conj-verb" placeholder="e.g. hablar, ser, ir" autocomplete="off" spellcheck="false">
+                    </div>
+                    <div class="input-field">
+                        <label for="conj-tense">Tense</label>
+                        <select id="conj-tense">
+                            <option value="present">Presente (Present)</option>
+                            <option value="preterite">Pretérito (Preterite)</option>
+                            <option value="imperfect">Imperfecto (Imperfect)</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="btn-conjugate">Conjugate</button>
+                </form>
+                <div id="conjugation-result" class="result-card hidden">
+                    <div class="result-header">
+                        <h2 id="conj-result-verb"></h2>
+                        <span class="badge" id="conj-result-badge"></span>
+                    </div>
+                    <table class="conj-table" id="conj-table">
+                        <thead>
+                            <tr><th>Pronoun</th><th>Form</th></tr>
+                        </thead>
+                        <tbody id="conj-table-body"></tbody>
+                    </table>
+                </div>
+                <div id="conjugation-error" class="error-message hidden"></div>
+            </div>
+        </section>
+
+        <!-- ══════════ Chat ══════════ -->
+        <section id="section-chat" class="tab-section">
+            <div class="section-header">
+                <h1>Conversational Practice</h1>
+                <p class="section-subtitle">Chat with an AI Spanish tutor</p>
+            </div>
+            <div class="chat-container">
+                <div class="chat-toolbar">
+                    <label for="chat-model-select">Model:</label>
+                    <select id="chat-model-select">
+                        <option value="">Loading models…</option>
+                    </select>
+                    <button class="btn btn-sm btn-ghost" id="btn-clear-chat" title="Clear conversation">Clear</button>
+                </div>
+                <div class="chat-messages" id="chat-messages">
+                    <div class="chat-welcome">
+                        <p>¡Hola! 👋 I'm your Spanish conversation partner.</p>
+                        <p>Write something in Spanish (or English) and I'll help you practice!</p>
+                    </div>
+                </div>
+                <form id="chat-form" class="chat-input-row">
+                    <input type="text" id="chat-input" placeholder="Escribe algo en español…" autocomplete="off">
+                    <button type="submit" class="btn btn-primary" id="btn-send-chat">Send</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- ══════════ Booklet Builder ══════════ -->
+        <section id="section-booklet" class="tab-section">
+            <div class="section-header">
+                <h1>Bilingual Booklet Builder</h1>
+                <p class="section-subtitle">Create a parallel bilingual reader (target language left, English right)</p>
+            </div>
+            <div class="booklet-container">
+                <form id="booklet-form" class="booklet-form">
+                    <div class="form-grid">
+                        <div class="input-field">
+                            <label for="booklet-proficiency">Proficiency Level</label>
+                            <select id="booklet-proficiency">
+                                <option value="A1">A1 — Beginner</option>
+                                <option value="A2">A2 — Elementary</option>
+                                <option value="B1" selected>B1 — Intermediate</option>
+                                <option value="B2">B2 — Upper Intermediate</option>
+                                <option value="C1">C1 — Advanced</option>
+                            </select>
+                        </div>
+                        <div class="input-field">
+                            <label for="booklet-lang">Target Language</label>
+                            <select id="booklet-lang">
+                                <option value="Spanish" selected>Spanish</option>
+                                <option value="German">German</option>
+                                <option value="French">French</option>
+                            </select>
+                        </div>
+                        <div class="input-field">
+                            <label for="booklet-model">Ollama Model (for translation)</label>
+                            <select id="booklet-model">
+                                <option value="">Loading models…</option>
+                            </select>
+                        </div>
+                        <div class="input-field">
+                            <label for="booklet-binding">Binding Type</label>
+                            <select id="booklet-binding">
+                                <option value="side_by_side">Side-by-Side (PDF)</option>
+                                <option value="saddle">Saddle Stapled (Booklet)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="file-uploads">
+                        <div class="file-upload-field">
+                            <label for="booklet-english-file">English Text File <span class="required">*</span></label>
+                            <div class="file-drop" id="drop-english">
+                                <input type="file" id="booklet-english-file" accept=".txt" required>
+                                <span class="file-drop-label">📄 Drop .txt file or click to browse</span>
+                                <span class="file-drop-name" id="english-file-name"></span>
+                            </div>
+                        </div>
+                        <div class="file-upload-field">
+                            <label for="booklet-target-file">Target Language Text File <span class="optional">(optional)</span></label>
+                            <div class="file-drop" id="drop-target">
+                                <input type="file" id="booklet-target-file" accept=".txt">
+                                <span class="file-drop-label">📄 Drop .txt file or click to browse</span>
+                                <span class="file-drop-name" id="target-file-name"></span>
+                            </div>
+                            <p class="field-help">If provided, no LLM translation is needed.</p>
+                        </div>
+                    </div>
+
+                    <div class="checkbox-field">
+                        <label class="checkbox-label" for="booklet-skip-restructure">
+                            <input type="checkbox" id="booklet-skip-restructure">
+                            <span>Skip text restructuring</span>
+                        </label>
+                        <p class="field-help">Check this if your English text is already formatted with one sentence per paragraph, or if your LLM struggles with the restructure step.</p>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg" id="btn-build-booklet">
+                        <span class="btn-text">Build Booklet</span>
+                        <span class="btn-spinner hidden" id="booklet-spinner"></span>
+                    </button>
+                </form>
+                <div id="booklet-status" class="status-message hidden"></div>
+                <div id="booklet-error" class="error-message hidden"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
