@@ -123,6 +123,15 @@
                     <select id="chat-model-select">
                         <option value="">Loading models…</option>
                     </select>
+                    <label for="chat-proficiency-select">Level:</label>
+                    <select id="chat-proficiency-select">
+                        <option value="A1">A1 — Beginner</option>
+                        <option value="A2">A2 — Elementary</option>
+                        <option value="B1" selected>B1 — Intermediate</option>
+                        <option value="B2">B2 — Upper Intermediate</option>
+                        <option value="C1">C1 — Advanced</option>
+                        <option value="C2">C2 — Mastery</option>
+                    </select>
                     <button class="btn btn-sm btn-ghost" id="btn-clear-chat" title="Clear conversation">Clear</button>
                 </div>
                 <div class="chat-messages" id="chat-messages">

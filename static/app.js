@@ -174,6 +174,7 @@ function initChat() {
         if (!message) return;
 
         const model = modelSelect.value;
+        const proficiency = document.getElementById("chat-proficiency-select").value;
         if (!model) {
             alert("Please select a model first.");
             return;
@@ -203,6 +204,7 @@ function initChat() {
                     message,
                     history: conversationHistory.slice(-20), // Keep last 20 turns
                     model,
+                    proficiency,
                 }),
             });
 

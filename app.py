@@ -109,23 +109,14 @@ def get_models():
 
 # ── Chat API (SSE streaming) ────────────────────────────────────────
 
-CHAT_SYSTEM_PROMPT = (
-    "You are a friendly, patient native Spanish speaker helping an English speaker "
-    "learn Spanish through conversation. Respond primarily in Spanish, but keep "
-    "your sentences at a level appropriate for a language learner. "
-    "If the user makes a noticeable grammar or vocabulary error, gently correct "
-    "them by showing the correct form in parentheses or with a brief explanation. "
-    "Suggest new vocabulary when natural. Keep replies conversational and encouraging. "
-    "If the user writes in English, respond in Spanish but include a brief English "
-    "translation in parentheses to help them understand."
-)
+
 
 
 @app.route("/api/chat/send", methods=["POST"])
 def chat_send():
     """
     Stream a chat response from Ollama via Server-Sent Events.
-    Expects JSON: { "message": "...", "history": [...], "model": "..." }
+    Expects JSON: { "message": "...", "history": [...], "model": "...", "proficiency": "..." }
     """
     data = request.get_json(silent=True)
     if not data:
@@ -134,14 +125,28 @@ def chat_send():
     user_message = data.get("message", "").strip()
     history = data.get("history", [])
     model = data.get("model", "")
+    proficiency = data.get("proficiency", "B1")
 
     if not user_message:
         return jsonify({"error": "Message cannot be empty."}), 400
     if not model:
         return jsonify({"error": "Please select a model."}), 400
 
+    dynamic_system_prompt = (
+        "You are a friendly, patient native Spanish speaker helping an English speaker "
+        "learn Spanish through conversation. "
+        f"Your student's current proficiency level is {proficiency} "
+        "(A1=Beginner, A2=Elementary, B1=Intermediate, B2=Upper Intermediate, C1=Advanced, C2=Mastery). "
+        "Respond ONLY in Spanish, and STRICTLY limit your vocabulary, grammar, and sentence complexity "
+        f"to match the {proficiency} level. Do not use English translations. "
+        "If the user makes a noticeable grammar or vocabulary error, gently correct "
+        "them by showing the correct Spanish form in parentheses or with a brief explanation in Spanish. "
+        "Suggest new vocabulary when natural. Keep replies conversational and encouraging. "
+        "Even if the user writes in English, you must respond entirely in Spanish."
+    )
+
     # Build message list with system prompt + history + new message
-    messages = [{"role": "system", "content": CHAT_SYSTEM_PROMPT}]
+    messages = [{"role": "system", "content": dynamic_system_prompt}]
     for msg in history:
         messages.append({"role": msg.get("role", "user"), "content": msg.get("content", "")})
     messages.append({"role": "user", "content": user_message})
