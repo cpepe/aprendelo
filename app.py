@@ -16,8 +16,7 @@ import tempfile
 from flask import (
     Flask, Response, jsonify, render_template, request, send_file, stream_with_context,
 )
-
-from conjugator import conjugate, get_supported_tenses
+import re
 from ollama_client import list_models, chat_stream, translate_text, restructure_for_translation
 from booklet_builder import build_bilingual_pdf
 
@@ -26,75 +25,28 @@ from booklet_builder import build_bilingual_pdf
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16 MB upload limit
 
-FLASHCARD_DATA_PATH = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), "flashcards.json"
-)
-
-
-def load_flashcards():
-    """Load vocabulary from the flat key-value JSON file."""
-    try:
-        with open(FLASHCARD_DATA_PATH, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError) as e:
-        print(f"Warning: Could not load flashcards: {e}")
-        return {}
-
-
-FLASHCARDS = load_flashcards()
-
 # ── Page routes ──────────────────────────────────────────────────────
-
 
 @app.route("/")
 def index():
-    """Serve the single-page application."""
-    return render_template("index.html")
-
-
-# ── Flashcard API ────────────────────────────────────────────────────
-
-
-@app.route("/api/flashcard/get_card")
-def get_flashcard():
-    """Return a random flashcard word pair."""
-    if not FLASHCARDS:
-        return jsonify({"error": "No flashcard data available."}), 500
-
-    spanish = random.choice(list(FLASHCARDS.keys()))
-    english = FLASHCARDS[spanish]
-    return jsonify({"spanish": spanish, "english": english})
-
-
-# ── Conjugation API ──────────────────────────────────────────────────
-
-
-@app.route("/api/conjugation/tenses")
-def get_tenses():
-    """Return the list of supported tenses."""
-    return jsonify({"tenses": get_supported_tenses()})
-
-
-@app.route("/api/conjugation/conjugate", methods=["POST"])
-def conjugate_verb():
-    """Conjugate a verb in the specified tense."""
-    data = request.get_json(silent=True)
-    if not data:
-        return jsonify({"error": "Request body must be JSON."}), 400
-
-    verb = data.get("verb", "").strip()
-    tense = data.get("tense", "").strip()
-
-    if not verb:
-        return jsonify({"error": "Please provide a verb."}), 400
-    if not tense:
-        return jsonify({"error": "Please provide a tense."}), 400
-
+    """Serve the application with local features enabled."""
+    index_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "index.html")
     try:
-        result = conjugate(verb, tense)
-        return jsonify(result)
-    except ValueError as e:
-        return jsonify({"error": str(e)}), 400
+        with open(index_path, "r", encoding="utf-8") as f:
+            html = f.read()
+            
+        # Strip disabled placeholders
+        html = re.sub(r'<div class="local-disabled-message.*?</div>', '', html, flags=re.DOTALL)
+        
+        # Strip the local-only boundary markers
+        html = html.replace('<!-- %LOCAL_ONLY_START% -->\n', '')
+        html = html.replace('<!-- %LOCAL_ONLY_END% -->\n', '')
+        html = html.replace('<!-- %LOCAL_ONLY_START% -->', '')
+        html = html.replace('<!-- %LOCAL_ONLY_END% -->', '')
+        
+        return html
+    except Exception as e:
+        return f"Error loading index.html: {str(e)}", 500
 
 
 # ── Ollama model listing ────────────────────────────────────────────
@@ -327,7 +279,7 @@ def build_booklet():
 
 if __name__ == "__main__":
     print("── Aprendelo ──")
-    print(f"   Loaded {len(FLASHCARDS)} flashcard words")
+    print("   Operating in Hybrid Static/Local mode")
     print(f"   Checking Ollama... ", end="")
     models = list_models()
     if models:

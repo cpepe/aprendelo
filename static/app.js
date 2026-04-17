@@ -44,26 +44,45 @@ function initFlashcards() {
         card.classList.toggle("flipped");
     }
 
+    let flashcardsData = null;
+
+    async function ensureFlashcards() {
+        if (flashcardsData) return flashcardsData;
+        try {
+            const resp = await fetch("./static/flashcards.json");
+            flashcardsData = await resp.json();
+            return flashcardsData;
+        } catch (err) {
+            return null;
+        }
+    }
+
     async function loadCard() {
         card.classList.remove("flipped");
 
-        try {
-            const resp = await fetch("/api/flashcard/get_card");
-            const data = await resp.json();
-            if (data.error) {
-                frontWord.textContent = "Error";
-                backWord.textContent = data.error;
-                return;
-            }
-            // Small delay so the un-flip animation finishes
-            setTimeout(() => {
-                frontWord.textContent = data.spanish;
-                backWord.textContent = data.english;
-            }, 150);
-        } catch (err) {
+        const data = await ensureFlashcards();
+        if (!data) {
             frontWord.textContent = "Error";
-            backWord.textContent = "Could not load card";
+            backWord.textContent = "Could not load cards";
+            return;
         }
+        
+        const keys = Object.keys(data);
+        if (keys.length === 0) {
+            frontWord.textContent = "Error";
+            backWord.textContent = "No cards found";
+            return;
+        }
+
+        const randomKey = keys[Math.floor(Math.random() * keys.length)];
+        const spanish = randomKey;
+        const english = data[randomKey];
+
+        // Small delay so the un-flip animation finishes
+        setTimeout(() => {
+            frontWord.textContent = spanish;
+            backWord.textContent = english;
+        }, 150);
     }
 
     card.addEventListener("click", flipCard);
@@ -114,18 +133,7 @@ function initConjugation() {
         }
 
         try {
-            const resp = await fetch("/api/conjugation/conjugate", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ verb, tense }),
-            });
-
-            const data = await resp.json();
-
-            if (data.error) {
-                showError(errorDiv, data.error);
-                return;
-            }
+            const data = window.conjugateVerb(verb, tense);
 
             // Render results
             resultVerb.textContent = data.verb;
@@ -147,7 +155,7 @@ function initConjugation() {
 
             resultCard.classList.remove("hidden");
         } catch (err) {
-            showError(errorDiv, "Request failed. Is the server running?");
+            showError(errorDiv, err.message || "Failed to conjugate verb");
         }
     });
 }

@@ -1,14 +1,4 @@
-"""
-Spanish Verb Conjugation Data
-==============================
-Lookup tables for regular patterns and common irregular verbs.
-Tenses covered: Present Indicative, Preterite Indicative, Imperfect Indicative.
-Pronouns order: yo, tú, él/ella/usted, nosotros, vosotros, ellos/ellas/ustedes
-"""
-
-# ── Regular endings by infinitive class ──────────────────────────────
-
-REGULAR_ENDINGS = {
+const REGULAR_ENDINGS = {
     "present": {
         "ar": ["o", "as", "a", "amos", "áis", "an"],
         "er": ["o", "es", "e", "emos", "éis", "en"],
@@ -24,15 +14,11 @@ REGULAR_ENDINGS = {
         "er": ["ía", "ías", "ía", "íamos", "íais", "ían"],
         "ir": ["ía", "ías", "ía", "íamos", "íais", "ían"],
     },
-}
+};
 
-PRONOUNS = ["yo", "tú", "él/ella/usted", "nosotros", "vosotros", "ellos/ellas/ustedes"]
+const PRONOUNS = ["yo", "tú", "él/ella/usted", "nosotros", "vosotros", "ellos/ellas/ustedes"];
 
-# ── Irregular verb conjugations ──────────────────────────────────────
-# Each entry: { tense: [6 forms] }
-# Only tenses that differ from regular pattern are listed.
-
-IRREGULARS = {
+const IRREGULARS = {
     "ser": {
         "present":   ["soy", "eres", "es", "somos", "sois", "son"],
         "preterite": ["fui", "fuiste", "fue", "fuimos", "fuisteis", "fueron"],
@@ -132,11 +118,61 @@ IRREGULARS = {
         "present":   ["pido", "pides", "pide", "pedimos", "pedís", "piden"],
         "preterite": ["pedí", "pediste", "pidió", "pedimos", "pedisteis", "pidieron"],
     },
-}
+};
 
-SUPPORTED_TENSES = ["present", "preterite", "imperfect"]
-TENSE_LABELS = {
+const SUPPORTED_TENSES = ["present", "preterite", "imperfect"];
+const TENSE_LABELS = {
     "present": "Presente (Present Indicative)",
     "preterite": "Pretérito (Preterite)",
     "imperfect": "Imperfecto (Imperfect Indicative)",
+};
+
+function getVerbClass(infinitive) {
+    const inf = infinitive.toLowerCase().trim();
+    if (inf.endsWith("ar")) return "ar";
+    if (inf.endsWith("er")) return "er";
+    if (inf.endsWith("ír") || inf.endsWith("ir")) return "ir";
+    return null;
+}
+
+function getStem(infinitive) {
+    return infinitive.toLowerCase().trim().slice(0, -2);
+}
+
+window.conjugateVerb = function(verbRaw, tenseRaw) {
+    const verb = verbRaw.toLowerCase().trim();
+    const tense = tenseRaw.toLowerCase().trim();
+
+    if (!SUPPORTED_TENSES.includes(tense)) {
+        throw new Error(`Unsupported tense '${tense}'. Choose from: ${SUPPORTED_TENSES.join(', ')}`);
+    }
+
+    const verbClass = getVerbClass(verb);
+    if (!verbClass) {
+        throw new Error(`'${verb}' does not appear to be a valid Spanish infinitive (must end in -ar, -er, or -ir).`);
+    }
+
+    let isIrregular = false;
+    let forms = [];
+
+    if (IRREGULARS[verb] && IRREGULARS[verb][tense]) {
+        forms = IRREGULARS[verb][tense];
+        isIrregular = true;
+    } else {
+        const stem = getStem(verb);
+        const endings = REGULAR_ENDINGS[tense][verbClass];
+        forms = endings.map(end => stem + end);
+    }
+
+    const conjugations = PRONOUNS.map((pronoun, index) => ({
+        pronoun: pronoun,
+        form: forms[index]
+    }));
+
+    return {
+        verb: verb,
+        tense: tense,
+        conjugations: conjugations,
+        irregular: isIrregular
+    };
 }

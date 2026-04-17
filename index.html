@@ -8,8 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/style.css">
-    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <link rel="stylesheet" href="./static/style.css">
+    <link rel="icon" type="image/png" href="./static/favicon.png">
 </head>
 <body>
     <!-- ══════════ Navigation ══════════ -->
@@ -122,6 +122,11 @@
                 <h1>Conversational Practice</h1>
                 <p class="section-subtitle">Chat with an AI Spanish tutor</p>
             </div>
+            <div class="local-disabled-message" style="text-align: center; padding: 3rem 1rem; background: var(--bg-surface); border: 1px dashed var(--border); border-radius: var(--radius-lg); margin-top: 1rem;">
+                <h2 style="color: var(--text-muted); margin-bottom: 0.5rem;">Disabled in static site</h2>
+                <p style="color: var(--text-secondary); font-size: 0.95rem;">This advanced feature requires the local Python server to be running.</p>
+            </div>
+<!-- %LOCAL_ONLY_START% -->
             <div class="chat-container">
                 <div class="chat-toolbar">
                     <label for="chat-model-select">Model:</label>
@@ -150,6 +155,7 @@
                     <button type="submit" class="btn btn-primary" id="btn-send-chat">Send</button>
                 </form>
             </div>
+<!-- %LOCAL_ONLY_END% -->
         </section>
 
         <!-- ══════════ Booklet Builder ══════════ -->
@@ -158,6 +164,11 @@
                 <h1>Bilingual Booklet Builder</h1>
                 <p class="section-subtitle">Create a parallel bilingual reader (target language left, English right)</p>
             </div>
+            <div class="local-disabled-message" style="text-align: center; padding: 3rem 1rem; background: var(--bg-surface); border: 1px dashed var(--border); border-radius: var(--radius-lg); margin-top: 1rem;">
+                <h2 style="color: var(--text-muted); margin-bottom: 0.5rem;">Disabled in static site</h2>
+                <p style="color: var(--text-secondary); font-size: 0.95rem;">This advanced feature requires the local Python server to be running.</p>
+            </div>
+<!-- %LOCAL_ONLY_START% -->
             <div class="booklet-container">
                 <form id="booklet-form" class="booklet-form">
                     <div class="form-grid">
@@ -230,6 +241,7 @@
                 <div id="booklet-status" class="status-message hidden"></div>
                 <div id="booklet-error" class="error-message hidden"></div>
             </div>
+<!-- %LOCAL_ONLY_END% -->
         </section>
 
         <!-- ══════════ Useful Tools ══════════ -->
@@ -268,6 +280,11 @@
                 <h1>Translator</h1>
                 <p class="section-subtitle">Translate text between languages with adjustable proficiency levels</p>
             </div>
+            <div class="local-disabled-message" style="text-align: center; padding: 3rem 1rem; background: var(--bg-surface); border: 1px dashed var(--border); border-radius: var(--radius-lg); margin-top: 1rem;">
+                <h2 style="color: var(--text-muted); margin-bottom: 0.5rem;">Disabled in static site</h2>
+                <p style="color: var(--text-secondary); font-size: 0.95rem;">This advanced feature requires the local Python server to be running.</p>
+            </div>
+<!-- %LOCAL_ONLY_START% -->
             <div class="translator-container">
                 <form id="translate-form" class="booklet-form">
                     <div class="form-grid">
@@ -332,10 +349,12 @@
                 </form>
                 <div id="translate-error" class="error-message hidden"></div>
             </div>
+<!-- %LOCAL_ONLY_END% -->
         </section>
 
     </main>
 
-    <script src="/static/app.js"></script>
+    <script src="./static/conjugator.js"></script>
+    <script src="./static/app.js"></script>
 </body>
 </html>
