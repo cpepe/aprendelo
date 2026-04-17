@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initConjugation();
     initChat();
     initBooklet();
+    initTranslate();
 });
 
 /* ── Tab Navigation ───────────────────────────────────────────── */
@@ -385,6 +386,120 @@ function initBooklet() {
             spinner.classList.add("hidden");
             btnText.textContent = "Build Booklet";
         }
+    });
+}
+
+/* ── Translator ───────────────────────────────────────────────── */
+
+function initTranslate() {
+    const form = document.getElementById("translate-form");
+    const modelSelect = document.getElementById("translate-model");
+    const inputArea = document.getElementById("translate-input");
+    const outputDiv = document.getElementById("translate-output");
+    const btnClear = document.getElementById("btn-translate-clear");
+    const btnTranslate = document.getElementById("btn-translate");
+    const spinner = document.getElementById("translate-spinner");
+    const btnText = btnTranslate.querySelector(".btn-text");
+    const errorDiv = document.getElementById("translate-error");
+
+    let isStreaming = false;
+
+    // Load models
+    loadModels(modelSelect);
+
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (isStreaming) return;
+
+        const text = inputArea.value.trim();
+        if (!text) return;
+
+        const model = modelSelect.value;
+        const sourceLang = document.getElementById("translate-source-lang").value;
+        const targetLang = document.getElementById("translate-target-lang").value;
+        const proficiency = document.getElementById("translate-proficiency").value;
+
+        if (!model) {
+            alert("Please select a model first.");
+            return;
+        }
+
+        errorDiv.classList.add("hidden");
+        outputDiv.innerHTML = `<span class="typing-indicator"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></span>`;
+        isStreaming = true;
+        btnTranslate.disabled = true;
+        spinner.classList.remove("hidden");
+        btnText.textContent = "Translating…";
+        let fullResponse = "";
+
+        try {
+            const resp = await fetch("/api/translate/stream", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    text,
+                    source_lang: sourceLang,
+                    target_lang: targetLang,
+                    model,
+                    proficiency,
+                }),
+            });
+
+            if (!resp.ok) {
+                const errData = await resp.json();
+                outputDiv.textContent = `Error: ${errData.error || "Unknown error"}`;
+                isStreaming = false;
+                throw new Error("Translation failed.");
+            }
+
+            const reader = resp.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = "";
+
+            outputDiv.textContent = "";
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split("\n");
+                buffer = lines.pop(); // Keep incomplete line in buffer
+
+                for (const line of lines) {
+                    if (line.startsWith("data: ")) {
+                        try {
+                            const payload = JSON.parse(line.slice(6));
+                            if (payload.content) {
+                                fullResponse += payload.content;
+                                outputDiv.textContent = fullResponse;
+                                scrollToBottom(outputDiv);
+                            }
+                            if (payload.done) break;
+                        } catch (_) {
+                            // skip malformed lines
+                        }
+                    }
+                }
+            }
+        } catch (err) {
+            if (!fullResponse) {
+                outputDiv.textContent = `Error: Could not connect to the server or translation failed.`;
+            }
+        } finally {
+            isStreaming = false;
+            btnTranslate.disabled = false;
+            spinner.classList.add("hidden");
+            btnText.textContent = "Translate";
+            scrollToBottom(outputDiv);
+        }
+    });
+
+    btnClear.addEventListener("click", () => {
+        if (isStreaming) return;
+        inputArea.value = "";
+        outputDiv.textContent = "";
+        errorDiv.classList.add("hidden");
     });
 }
 

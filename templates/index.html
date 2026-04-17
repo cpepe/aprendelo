@@ -35,6 +35,10 @@
                 <span class="tab-icon">📖</span>
                 <span class="tab-label">Booklet</span>
             </button>
+            <button class="nav-tab" data-tab="translate" id="nav-translate">
+                <span class="tab-icon">🔤</span>
+                <span class="tab-label">Translator</span>
+            </button>
             <button class="nav-tab" data-tab="tools" id="nav-tools">
                 <span class="tab-icon">🛠️</span>
                 <span class="tab-label">Tools</span>
@@ -255,6 +259,78 @@
                     <div class="tool-icon-empty">✨</div>
                     <p>More coming soon...</p>
                 </div>
+            </div>
+        </section>
+
+        <!-- ══════════ Translator ══════════ -->
+        <section id="section-translate" class="tab-section">
+            <div class="section-header">
+                <h1>Translator</h1>
+                <p class="section-subtitle">Translate text between languages with adjustable proficiency levels</p>
+            </div>
+            <div class="translator-container">
+                <form id="translate-form" class="booklet-form">
+                    <div class="form-grid">
+                        <div class="input-field">
+                            <label for="translate-source-lang">Source Language</label>
+                            <select id="translate-source-lang">
+                                <option value="Auto-detect" selected>Auto-detect</option>
+                                <option value="English">English</option>
+                                <option value="Spanish">Spanish</option>
+                                <option value="French">French</option>
+                                <option value="Italian">Italian</option>
+                                <option value="German">German</option>
+                            </select>
+                        </div>
+                        <div class="input-field">
+                            <label for="translate-target-lang">Target Language</label>
+                            <select id="translate-target-lang">
+                                <option value="English">English</option>
+                                <option value="Spanish" selected>Spanish</option>
+                                <option value="French">French</option>
+                                <option value="Italian">Italian</option>
+                                <option value="German">German</option>
+                            </select>
+                        </div>
+                        <div class="input-field">
+                            <label for="translate-proficiency">Target Proficiency</label>
+                            <select id="translate-proficiency">
+                                <option value="A1">A1 — Beginner</option>
+                                <option value="A2">A2 — Elementary</option>
+                                <option value="B1" selected>B1 — Intermediate</option>
+                                <option value="B2">B2 — Upper Intermediate</option>
+                                <option value="C1">C1 — Advanced</option>
+                                <option value="C2">C2 — Mastery</option>
+                            </select>
+                        </div>
+                        <div class="input-field">
+                            <label for="translate-model">Ollama Model</label>
+                            <select id="translate-model">
+                                <option value="">Loading models…</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-grid" style="align-items: stretch;">
+                        <div class="input-field" style="height: 100%;">
+                            <label for="translate-input">Text to Translate</label>
+                            <textarea id="translate-input" placeholder="Enter text here..." style="flex: 1; min-height: 250px; resize: vertical; padding: 1rem; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); color: var(--text-primary); font-family: inherit; font-size: 0.925rem; outline: none;"></textarea>
+                        </div>
+                        <div class="input-field" style="height: 100%;">
+                            <label for="translate-output">Translation</label>
+                            <div id="translate-output" style="flex: 1; min-height: 250px; overflow-y: auto; padding: 1rem; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); font-family: inherit; font-size: 0.925rem; white-space: pre-wrap; line-height: 1.6;"></div>
+                        </div>
+                    </div>
+
+                    <div class="input-group-row">
+                        <button type="submit" class="btn btn-primary btn-lg" id="btn-translate">
+                            <span class="btn-text">Translate</span>
+                            <span class="btn-spinner hidden" id="translate-spinner"></span>
+                        </button>
+                        <button type="button" class="btn btn-ghost btn-lg" id="btn-translate-clear">Clear</button>
+                    </div>
+                </form>
+                <div id="translate-error" class="error-message hidden"></div>
             </div>
         </section>
 

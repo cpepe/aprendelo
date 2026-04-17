@@ -131,8 +131,10 @@ def _draw_footer(canv, page_num, x_center, lang_label="ES/EN"):
 
 LANG_CODES = {
     "Spanish": "ES",
+    "Italian": "IT",
     "German": "DE",
     "French": "FR",
+    "English": "EN"
 }
 
 

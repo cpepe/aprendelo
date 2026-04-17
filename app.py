@@ -167,6 +167,64 @@ def chat_send():
     )
 
 
+# ── Translator API (SSE streaming) ──────────────────────────────────
+
+
+@app.route("/api/translate/stream", methods=["POST"])
+def translate_stream():
+    """
+    Stream a translation response from Ollama via Server-Sent Events.
+    Expects JSON: { "text": "...", "source_lang": "...", "target_lang": "...", "model": "...", "proficiency": "..." }
+    """
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({"error": "Request body must be JSON."}), 400
+
+    text = data.get("text", "").strip()
+    source_lang = data.get("source_lang", "Auto-detect")
+    target_lang = data.get("target_lang", "Spanish")
+    model = data.get("model", "")
+    proficiency = data.get("proficiency", "B1")
+
+    if not text:
+        return jsonify({"error": "Text cannot be empty."}), 400
+    if not model:
+        return jsonify({"error": "Please select a model."}), 400
+
+    if source_lang.lower() == "auto-detect" or not source_lang:
+        source_instruction = f"detect the language of the following text and translate it to {target_lang}"
+    else:
+        source_instruction = f"translate the following text from {source_lang} to {target_lang}"
+
+    system_prompt = (
+        f"You are a professional translator. {source_instruction.capitalize()}. "
+        f"Target the translation at a {proficiency} CEFR proficiency level — "
+        f"use vocabulary and grammar structures appropriate for that level. "
+        f"Preserve paragraph structure exactly. Do not add any commentary, notes, or explanations. "
+        f"Output ONLY the translated text."
+    )
+
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": text}
+    ]
+
+    def generate():
+        for chunk in chat_stream(model, messages):
+            # SSE format: data: <text>\n\n
+            yield f"data: {json.dumps({'content': chunk})}\n\n"
+        yield f"data: {json.dumps({'done': True})}\n\n"
+
+    return Response(
+        stream_with_context(generate()),
+        mimetype="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+
 # ── Booklet Builder API ─────────────────────────────────────────────
 
 
