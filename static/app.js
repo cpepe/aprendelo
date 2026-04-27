@@ -112,12 +112,23 @@ function initFlashcards() {
 function initConjugation() {
     const form = document.getElementById("conjugation-form");
     const verbInput = document.getElementById("conj-verb");
-    const tenseSelect = document.getElementById("conj-tense");
     const resultCard = document.getElementById("conjugation-result");
     const resultVerb = document.getElementById("conj-result-verb");
     const resultBadge = document.getElementById("conj-result-badge");
-    const tableBody = document.getElementById("conj-table-body");
+    const tensesContainer = document.getElementById("conj-tenses-container");
     const errorDiv = document.getElementById("conjugation-error");
+
+    const EXAMPLES = {
+        present: { es: "Yo hablo español.", en: "I speak Spanish. (Habitual or current action)" },
+        preterite: { es: "Ayer hablé español.", en: "Yesterday I spoke Spanish. (Completed action)" },
+        imperfect: { es: "Yo hablaba español de niño.", en: "I used to speak Spanish as a child. (Ongoing past action)" }
+    };
+
+    const TENSE_LABELS = {
+        present: "Presente (Present)",
+        preterite: "Pretérito (Preterite)",
+        imperfect: "Imperfecto (Imperfect)"
+    };
 
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -125,7 +136,6 @@ function initConjugation() {
         errorDiv.classList.add("hidden");
 
         const verb = verbInput.value.trim();
-        const tense = tenseSelect.value;
 
         if (!verb) {
             showError(errorDiv, "Please enter a verb.");
@@ -133,25 +143,44 @@ function initConjugation() {
         }
 
         try {
-            const data = window.conjugateVerb(verb, tense);
+            tensesContainer.innerHTML = "";
+            let isAnyIrregular = false;
+            let displayVerb = "";
+
+            ["present", "preterite", "imperfect"].forEach(tense => {
+                const data = window.conjugateVerb(verb, tense);
+                if (data.irregular) isAnyIrregular = true;
+                if (!displayVerb) displayVerb = data.verb;
+
+                const tenseDiv = document.createElement("div");
+                tenseDiv.className = "tense-section";
+
+                let rowsHtml = "";
+                data.conjugations.forEach(c => {
+                    rowsHtml += `<tr><td>${c.pronoun}</td><td>${c.form}</td></tr>`;
+                });
+
+                tenseDiv.innerHTML = `
+                    <h3>${TENSE_LABELS[tense]}</h3>
+                    <p class="tense-example"><em>${EXAMPLES[tense].es}</em><br/>${EXAMPLES[tense].en}</p>
+                    <table class="conj-table">
+                        <thead><tr><th>Pronoun</th><th>Form</th></tr></thead>
+                        <tbody>${rowsHtml}</tbody>
+                    </table>
+                `;
+                tensesContainer.appendChild(tenseDiv);
+            });
 
             // Render results
-            resultVerb.textContent = data.verb;
-            resultBadge.textContent = data.irregular ? "Irregular" : "Regular";
-            resultBadge.style.background = data.irregular
+            resultVerb.textContent = displayVerb;
+            resultBadge.textContent = isAnyIrregular ? "Contains Irregularities" : "Regular";
+            resultBadge.style.background = isAnyIrregular
                 ? "rgba(239, 68, 68, 0.15)"
                 : "rgba(34, 197, 94, 0.15)";
-            resultBadge.style.color = data.irregular ? "#fca5a5" : "#86efac";
-            resultBadge.style.borderColor = data.irregular
+            resultBadge.style.color = isAnyIrregular ? "#fca5a5" : "#86efac";
+            resultBadge.style.borderColor = isAnyIrregular
                 ? "rgba(239, 68, 68, 0.25)"
                 : "rgba(34, 197, 94, 0.25)";
-
-            tableBody.innerHTML = "";
-            data.conjugations.forEach((c) => {
-                const tr = document.createElement("tr");
-                tr.innerHTML = `<td>${c.pronoun}</td><td>${c.form}</td>`;
-                tableBody.appendChild(tr);
-            });
 
             resultCard.classList.remove("hidden");
         } catch (err) {

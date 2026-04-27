@@ -1,16 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Aprendelo — Interactive Spanish learning with flashcards, verb conjugation, AI conversation practice, and bilingual booklet builder.">
+    <meta name="description"
+        content="Aprendelo — Interactive Spanish learning with flashcards, verb conjugation, AI conversation practice, and bilingual booklet builder.">
     <title>Aprendelo — Learn Spanish</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="./static/style.css">
     <link rel="icon" type="image/png" href="./static/favicon.png">
 </head>
+
 <body>
     <!-- ══════════ Navigation ══════════ -->
     <nav id="main-nav">
@@ -31,13 +35,13 @@
                 <span class="tab-icon">💬</span>
                 <span class="tab-label">Chat</span>
             </button>
-            <button class="nav-tab" data-tab="booklet" id="nav-booklet">
-                <span class="tab-icon">📖</span>
-                <span class="tab-label">Booklet</span>
-            </button>
             <button class="nav-tab" data-tab="translate" id="nav-translate">
                 <span class="tab-icon">🔤</span>
                 <span class="tab-label">Translator</span>
+            </button>
+            <button class="nav-tab" data-tab="booklet" id="nav-booklet">
+                <span class="tab-icon">📖</span>
+                <span class="tab-label">Booklet</span>
             </button>
             <button class="nav-tab" data-tab="tools" id="nav-tools">
                 <span class="tab-icon">🛠️</span>
@@ -88,16 +92,10 @@
                 <form id="conjugation-form" class="input-group-row">
                     <div class="input-field">
                         <label for="conj-verb">Verb (infinitive)</label>
-                        <input type="text" id="conj-verb" placeholder="e.g. hablar, ser, ir" autocomplete="off" spellcheck="false">
+                        <input type="text" id="conj-verb" placeholder="e.g. hablar, ser, ir" autocomplete="off"
+                            spellcheck="false">
                     </div>
-                    <div class="input-field">
-                        <label for="conj-tense">Tense</label>
-                        <select id="conj-tense">
-                            <option value="present">Presente (Present)</option>
-                            <option value="preterite">Pretérito (Preterite)</option>
-                            <option value="imperfect">Imperfecto (Imperfect)</option>
-                        </select>
-                    </div>
+
                     <button type="submit" class="btn btn-primary" id="btn-conjugate">Conjugate</button>
                 </form>
                 <div id="conjugation-result" class="result-card hidden">
@@ -105,12 +103,7 @@
                         <h2 id="conj-result-verb"></h2>
                         <span class="badge" id="conj-result-badge"></span>
                     </div>
-                    <table class="conj-table" id="conj-table">
-                        <thead>
-                            <tr><th>Pronoun</th><th>Form</th></tr>
-                        </thead>
-                        <tbody id="conj-table-body"></tbody>
-                    </table>
+                    <div id="conj-tenses-container" class="tenses-grid"></div>
                 </div>
                 <div id="conjugation-error" class="error-message hidden"></div>
             </div>
@@ -122,11 +115,13 @@
                 <h1>Conversational Practice</h1>
                 <p class="section-subtitle">Chat with an AI Spanish tutor</p>
             </div>
-            <div class="local-disabled-message" style="text-align: center; padding: 3rem 1rem; background: var(--bg-surface); border: 1px dashed var(--border); border-radius: var(--radius-lg); margin-top: 1rem;">
+            <div class="local-disabled-message"
+                style="text-align: center; padding: 3rem 1rem; background: var(--bg-surface); border: 1px dashed var(--border); border-radius: var(--radius-lg); margin-top: 1rem;">
                 <h2 style="color: var(--text-muted); margin-bottom: 0.5rem;">Disabled in static site</h2>
-                <p style="color: var(--text-secondary); font-size: 0.95rem;">This advanced feature requires the local Python server to be running.</p>
+                <p style="color: var(--text-secondary); font-size: 0.95rem;">This advanced feature requires the local
+                    Python server to be running.</p>
             </div>
-<!-- %LOCAL_ONLY_START% -->
+            <!-- %LOCAL_ONLY_START% -->
             <div class="chat-container">
                 <div class="chat-toolbar">
                     <label for="chat-model-select">Model:</label>
@@ -155,7 +150,7 @@
                     <button type="submit" class="btn btn-primary" id="btn-send-chat">Send</button>
                 </form>
             </div>
-<!-- %LOCAL_ONLY_END% -->
+            <!-- %LOCAL_ONLY_END% -->
         </section>
 
         <!-- ══════════ Booklet Builder ══════════ -->
@@ -164,11 +159,13 @@
                 <h1>Bilingual Booklet Builder</h1>
                 <p class="section-subtitle">Create a parallel bilingual reader (target language left, English right)</p>
             </div>
-            <div class="local-disabled-message" style="text-align: center; padding: 3rem 1rem; background: var(--bg-surface); border: 1px dashed var(--border); border-radius: var(--radius-lg); margin-top: 1rem;">
+            <div class="local-disabled-message"
+                style="text-align: center; padding: 3rem 1rem; background: var(--bg-surface); border: 1px dashed var(--border); border-radius: var(--radius-lg); margin-top: 1rem;">
                 <h2 style="color: var(--text-muted); margin-bottom: 0.5rem;">Disabled in static site</h2>
-                <p style="color: var(--text-secondary); font-size: 0.95rem;">This advanced feature requires the local Python server to be running.</p>
+                <p style="color: var(--text-secondary); font-size: 0.95rem;">This advanced feature requires the local
+                    Python server to be running.</p>
             </div>
-<!-- %LOCAL_ONLY_START% -->
+            <!-- %LOCAL_ONLY_START% -->
             <div class="booklet-container">
                 <form id="booklet-form" class="booklet-form">
                     <div class="form-grid">
@@ -215,7 +212,8 @@
                             </div>
                         </div>
                         <div class="file-upload-field">
-                            <label for="booklet-target-file">Target Language Text File <span class="optional">(optional)</span></label>
+                            <label for="booklet-target-file">Target Language Text File <span
+                                    class="optional">(optional)</span></label>
                             <div class="file-drop" id="drop-target">
                                 <input type="file" id="booklet-target-file" accept=".txt">
                                 <span class="file-drop-label">📄 Drop .txt file or click to browse</span>
@@ -230,7 +228,8 @@
                             <input type="checkbox" id="booklet-skip-restructure">
                             <span>Skip text restructuring</span>
                         </label>
-                        <p class="field-help">Check this if your English text is already formatted with one sentence per paragraph, or if your LLM struggles with the restructure step.</p>
+                        <p class="field-help">Check this if your English text is already formatted with one sentence per
+                            paragraph, or if your LLM struggles with the restructure step.</p>
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-lg" id="btn-build-booklet">
@@ -241,7 +240,7 @@
                 <div id="booklet-status" class="status-message hidden"></div>
                 <div id="booklet-error" class="error-message hidden"></div>
             </div>
-<!-- %LOCAL_ONLY_END% -->
+            <!-- %LOCAL_ONLY_END% -->
         </section>
 
         <!-- ══════════ Useful Tools ══════════ -->
@@ -280,11 +279,13 @@
                 <h1>Translator</h1>
                 <p class="section-subtitle">Translate text between languages with adjustable proficiency levels</p>
             </div>
-            <div class="local-disabled-message" style="text-align: center; padding: 3rem 1rem; background: var(--bg-surface); border: 1px dashed var(--border); border-radius: var(--radius-lg); margin-top: 1rem;">
+            <div class="local-disabled-message"
+                style="text-align: center; padding: 3rem 1rem; background: var(--bg-surface); border: 1px dashed var(--border); border-radius: var(--radius-lg); margin-top: 1rem;">
                 <h2 style="color: var(--text-muted); margin-bottom: 0.5rem;">Disabled in static site</h2>
-                <p style="color: var(--text-secondary); font-size: 0.95rem;">This advanced feature requires the local Python server to be running.</p>
+                <p style="color: var(--text-secondary); font-size: 0.95rem;">This advanced feature requires the local
+                    Python server to be running.</p>
             </div>
-<!-- %LOCAL_ONLY_START% -->
+            <!-- %LOCAL_ONLY_START% -->
             <div class="translator-container">
                 <form id="translate-form" class="booklet-form">
                     <div class="form-grid">
@@ -331,11 +332,14 @@
                     <div class="form-grid" style="align-items: stretch;">
                         <div class="input-field" style="height: 100%;">
                             <label for="translate-input">Text to Translate</label>
-                            <textarea id="translate-input" placeholder="Enter text here..." style="flex: 1; min-height: 250px; resize: vertical; padding: 1rem; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); color: var(--text-primary); font-family: inherit; font-size: 0.925rem; outline: none;"></textarea>
+                            <textarea id="translate-input" placeholder="Enter text here..."
+                                style="flex: 1; min-height: 250px; resize: vertical; padding: 1rem; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); color: var(--text-primary); font-family: inherit; font-size: 0.925rem; outline: none;"></textarea>
                         </div>
                         <div class="input-field" style="height: 100%;">
                             <label for="translate-output">Translation</label>
-                            <div id="translate-output" style="flex: 1; min-height: 250px; overflow-y: auto; padding: 1rem; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); font-family: inherit; font-size: 0.925rem; white-space: pre-wrap; line-height: 1.6;"></div>
+                            <div id="translate-output"
+                                style="flex: 1; min-height: 250px; overflow-y: auto; padding: 1rem; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); font-family: inherit; font-size: 0.925rem; white-space: pre-wrap; line-height: 1.6;">
+                            </div>
                         </div>
                     </div>
 
@@ -349,7 +353,7 @@
                 </form>
                 <div id="translate-error" class="error-message hidden"></div>
             </div>
-<!-- %LOCAL_ONLY_END% -->
+            <!-- %LOCAL_ONLY_END% -->
         </section>
 
     </main>
@@ -357,4 +361,5 @@
     <script src="./static/conjugator.js"></script>
     <script src="./static/app.js"></script>
 </body>
+
 </html>
