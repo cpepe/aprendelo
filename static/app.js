@@ -66,7 +66,7 @@ function initFlashcards() {
             backWord.textContent = "Could not load cards";
             return;
         }
-        
+
         const keys = Object.keys(data);
         if (keys.length === 0) {
             frontWord.textContent = "Error";
@@ -114,8 +114,7 @@ function initConjugation() {
     const verbInput = document.getElementById("conj-verb");
     const resultCard = document.getElementById("conjugation-result");
     const resultVerb = document.getElementById("conj-result-verb");
-    const resultBadge = document.getElementById("conj-result-badge");
-    const tensesContainer = document.getElementById("conj-tenses-container");
+    const tensesGrid = document.getElementById("conj-tenses-grid");
     const errorDiv = document.getElementById("conjugation-error");
 
     const EXAMPLES = {
@@ -143,44 +142,52 @@ function initConjugation() {
         }
 
         try {
-            tensesContainer.innerHTML = "";
-            let isAnyIrregular = false;
-            let displayVerb = "";
-
-            ["present", "preterite", "imperfect"].forEach(tense => {
-                const data = window.conjugateVerb(verb, tense);
-                if (data.irregular) isAnyIrregular = true;
-                if (!displayVerb) displayVerb = data.verb;
-
-                const tenseDiv = document.createElement("div");
-                tenseDiv.className = "tense-section";
-
-                let rowsHtml = "";
-                data.conjugations.forEach(c => {
-                    rowsHtml += `<tr><td>${c.pronoun}</td><td>${c.form}</td></tr>`;
-                });
-
-                tenseDiv.innerHTML = `
-                    <h3>${TENSE_LABELS[tense]}</h3>
-                    <p class="tense-example"><em>${EXAMPLES[tense].es}</em><br/>${EXAMPLES[tense].en}</p>
-                    <table class="conj-table">
-                        <thead><tr><th>Pronoun</th><th>Form</th></tr></thead>
-                        <tbody>${rowsHtml}</tbody>
-                    </table>
-                `;
-                tensesContainer.appendChild(tenseDiv);
-            });
+            const data = window.conjugateVerb(verb);
 
             // Render results
-            resultVerb.textContent = displayVerb;
-            resultBadge.textContent = isAnyIrregular ? "Contains Irregularities" : "Regular";
-            resultBadge.style.background = isAnyIrregular
-                ? "rgba(239, 68, 68, 0.15)"
-                : "rgba(34, 197, 94, 0.15)";
-            resultBadge.style.color = isAnyIrregular ? "#fca5a5" : "#86efac";
-            resultBadge.style.borderColor = isAnyIrregular
-                ? "rgba(239, 68, 68, 0.25)"
-                : "rgba(34, 197, 94, 0.25)";
+            resultVerb.textContent = data.verb.charAt(0).toUpperCase() + data.verb.slice(1);
+            tensesGrid.innerHTML = "";
+
+            const tensesOrder = ["present", "preterite", "imperfect", "future"];
+
+            tensesOrder.forEach(tenseKey => {
+                const tenseData = data.tenses[tenseKey];
+
+                const section = document.createElement("div");
+                section.className = "tense-section";
+
+                const header = document.createElement("div");
+                header.className = "tense-header";
+
+                const title = document.createElement("span");
+                title.className = "tense-title";
+                title.textContent = tenseData.tenseLabel;
+
+                const badge = document.createElement("span");
+                badge.className = "badge";
+                badge.textContent = tenseData.irregular ? "Irregular" : "Regular";
+                badge.style.background = tenseData.irregular ? "rgba(239, 68, 68, 0.15)" : "rgba(34, 197, 94, 0.15)";
+                badge.style.color = tenseData.irregular ? "#fca5a5" : "#86efac";
+                badge.style.borderColor = tenseData.irregular ? "rgba(239, 68, 68, 0.25)" : "rgba(34, 197, 94, 0.25)";
+
+                header.appendChild(title);
+                header.appendChild(badge);
+
+                const table = document.createElement("table");
+                table.className = "conj-table";
+
+                let tbodyHTML = "";
+                tenseData.conjugations.forEach(c => {
+                    const transStr = c.translation ? `<span style="display:block; font-size:0.8em; color:var(--text-muted); font-weight:normal;">${c.translation}</span>` : "";
+                    tbodyHTML += `<tr><td>${c.pronoun}</td><td>${c.form}${transStr}</td></tr>`;
+                });
+
+                table.innerHTML = `<tbody>${tbodyHTML}</tbody>`;
+
+                section.appendChild(header);
+                section.appendChild(table);
+                tensesGrid.appendChild(section);
+            });
 
             resultCard.classList.remove("hidden");
         } catch (err) {
@@ -388,7 +395,7 @@ function initBooklet() {
                 try {
                     const errData = await resp.json();
                     errMsg = errData.error || errMsg;
-                } catch (_) {}
+                } catch (_) { }
                 showError(errorDiv, errMsg);
                 statusDiv.classList.add("hidden");
                 return;

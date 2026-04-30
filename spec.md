@@ -15,9 +15,9 @@ The application utilizes a **Hybrid Static/Local Architecture**, bypassing the n
 *   **Functionality**: Presents interactive flashcards for vocabulary recall testing. The user can flip the card and proceed to the next random vocabulary word.
 *   **Implementation**: Completely stateless. The JavaScript fetches a single static `flashcards.json` payload mapped to `{spanish: english}` logic from the exact same domain, randomizing and displaying the sets exclusively on the client side natively.
 
-#### 2.2. Verb Conjugation Tool (Static JavaScript)
-*   **Functionality**: Allows for rapid reference of conjugated Spanish verbs given an infinitive.
-*   **Implementation**: The Python mappings covering regular patterns, pronoun arrays, tense dictionaries, and major irregular verbs have been natively transposed to a `conjugator.js` file. The frontend can perform immediate tense lookups across indicative, preterite, and imperfect scopes natively without routing calls.
+#### 2.2. Verb Conjugation Tool
+*   **Functionality**: The user must be able to input a Spanish verb (e.g., *hablar*). The tool must accurately return the conjugated forms for all pronouns in the most important tenses (Presente, Pretérito, Imperfecto, Future) and indicate if the verb is irregular in that tense. Include the English translation for each conjugation (e.g. nacío - was born)
+*   **Data Requirement**: Implemented entirely on the frontend using JavaScript, combining dedicated conjugation logic for regular verbs with a lookup table for common irregular verbs.
 
 #### 2.3. Conversational AI Chat (Local Backend)
 *   **Functionality**: Open-ended conversational interface using a native Spanish tutor persona calibrated to a selected CEFR proficiency (A1-C2).

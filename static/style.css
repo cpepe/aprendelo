@@ -473,6 +473,30 @@ body {
 
 /* ── Conjugation table ────────────────────────────────────────── */
 
+.tenses-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.tense-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.tense-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tense-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
 .conj-table {
     width: 100%;
     border-collapse: separate;
@@ -829,6 +853,10 @@ body {
         width: 100%;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
+    }
+
+    .tenses-grid {
+        grid-template-columns: 1fr;
     }
 
     .tab-label {

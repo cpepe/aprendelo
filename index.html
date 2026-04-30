@@ -90,20 +90,21 @@
             </div>
             <div class="conjugation-container">
                 <form id="conjugation-form" class="input-group-row">
-                    <div class="input-field">
+                    <div class="input-field" style="flex: 1;">
                         <label for="conj-verb">Verb (infinitive)</label>
                         <input type="text" id="conj-verb" placeholder="e.g. hablar, ser, ir" autocomplete="off"
                             spellcheck="false">
                     </div>
-
-                    <button type="submit" class="btn btn-primary" id="btn-conjugate">Conjugate</button>
+                    <button type="submit" class="btn btn-primary" id="btn-conjugate"
+                        style="align-self: flex-end; margin-bottom: 4px;">Conjugate</button>
                 </form>
                 <div id="conjugation-result" class="result-card hidden">
                     <div class="result-header">
                         <h2 id="conj-result-verb"></h2>
-                        <span class="badge" id="conj-result-badge"></span>
                     </div>
-                    <div id="conj-tenses-container" class="tenses-grid"></div>
+                    <div class="tenses-grid" id="conj-tenses-grid">
+                        <!-- Tables will be injected here by JS -->
+                    </div>
                 </div>
                 <div id="conjugation-error" class="error-message hidden"></div>
             </div>
