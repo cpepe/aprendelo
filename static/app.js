@@ -5,6 +5,7 @@
    ═══════════════════════════════════════════════════════════════════ */
 
 document.addEventListener("DOMContentLoaded", () => {
+    initSettings();
     initTabs();
     initFlashcards();
     initConjugation();
@@ -203,14 +204,10 @@ function initChat() {
     const form = document.getElementById("chat-form");
     const input = document.getElementById("chat-input");
     const messagesDiv = document.getElementById("chat-messages");
-    const modelSelect = document.getElementById("chat-model-select");
     const btnClear = document.getElementById("btn-clear-chat");
 
     let conversationHistory = [];
     let isStreaming = false;
-
-    // Load models
-    loadModels(modelSelect);
 
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -219,10 +216,9 @@ function initChat() {
         const message = input.value.trim();
         if (!message) return;
 
-        const model = modelSelect.value;
-        const proficiency = document.getElementById("chat-proficiency-select").value;
+        const { model, proficiency } = getGlobalSettings();
         if (!model) {
-            alert("Please select a model first.");
+            alert("Please select an Ollama Model in the Settings tab.");
             return;
         }
 
@@ -327,7 +323,6 @@ function initChat() {
 
 function initBooklet() {
     const form = document.getElementById("booklet-form");
-    const modelSelect = document.getElementById("booklet-model");
     const statusDiv = document.getElementById("booklet-status");
     const errorDiv = document.getElementById("booklet-error");
     const btnSubmit = document.getElementById("btn-build-booklet");
@@ -338,17 +333,12 @@ function initBooklet() {
     setupFileDrop("booklet-english-file", "drop-english", "english-file-name");
     setupFileDrop("booklet-target-file", "drop-target", "target-file-name");
 
-    // Load models
-    loadModels(modelSelect);
-
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
         statusDiv.classList.add("hidden");
         errorDiv.classList.add("hidden");
-
-        const proficiency = document.getElementById("booklet-proficiency").value;
+        const { model, proficiency } = getGlobalSettings();
         const targetLang = document.getElementById("booklet-lang").value;
-        const model = modelSelect.value;
         const bindingType = document.getElementById("booklet-binding").value;
         const englishFile = document.getElementById("booklet-english-file").files[0];
         const targetFile = document.getElementById("booklet-target-file").files[0];
@@ -360,7 +350,7 @@ function initBooklet() {
         }
 
         if (!targetFile && !model) {
-            showError(errorDiv, "Please select a model for translation, or upload a target language file.");
+            alert("Please select an Ollama Model in the Settings tab, or upload a target language file.");
             return;
         }
 
@@ -438,7 +428,6 @@ function initBooklet() {
 
 function initTranslate() {
     const form = document.getElementById("translate-form");
-    const modelSelect = document.getElementById("translate-model");
     const inputArea = document.getElementById("translate-input");
     const outputDiv = document.getElementById("translate-output");
     const btnClear = document.getElementById("btn-translate-clear");
@@ -449,9 +438,6 @@ function initTranslate() {
 
     let isStreaming = false;
 
-    // Load models
-    loadModels(modelSelect);
-
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
         if (isStreaming) return;
@@ -459,13 +445,12 @@ function initTranslate() {
         const text = inputArea.value.trim();
         if (!text) return;
 
-        const model = modelSelect.value;
+        const { model, proficiency } = getGlobalSettings();
         const sourceLang = document.getElementById("translate-source-lang").value;
         const targetLang = document.getElementById("translate-target-lang").value;
-        const proficiency = document.getElementById("translate-proficiency").value;
 
         if (!model) {
-            alert("Please select a model first.");
+            alert("Please select an Ollama Model in the Settings tab.");
             return;
         }
 
@@ -629,7 +614,7 @@ function scrollToBottom(el) {
 
 function initSentenceBuilder() {
     const form = document.getElementById("sentence-form");
-    const modelSelect = document.getElementById("sentence-model");
+
     const btnGenerate = document.getElementById("btn-generate-sentence");
     const spinnerGenerate = document.getElementById("sentence-generate-spinner");
     const errorDiv = document.getElementById("sentence-error");
@@ -648,18 +633,13 @@ function initSentenceBuilder() {
 
     let currentExercise = null;
 
-    // Load models
-    loadModels(modelSelect);
-
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
         const topic = document.getElementById("sentence-topic").value.trim();
-        const proficiency = document.getElementById("sentence-proficiency").value;
-        const model = modelSelect.value;
-
+        const { model, proficiency } = getGlobalSettings();
 
         if (!model) {
-            alert("Please select a model first.");
+            alert("Please select an Ollama Model in the Settings tab.");
             return;
         }
 
@@ -733,8 +713,7 @@ function initSentenceBuilder() {
         }
 
         const userSentence = selectedTiles.map(t => t.textContent).join(" ");
-        const model = modelSelect.value;
-        const proficiency = document.getElementById("sentence-proficiency").value;
+        const { model, proficiency } = getGlobalSettings();
 
         btnCheck.disabled = true;
         spinnerCheck.classList.remove("hidden");
@@ -780,5 +759,47 @@ function initSentenceBuilder() {
             btnCheck.disabled = false;
             spinnerCheck.classList.add("hidden");
         }
+    });
+}
+/* ── Settings ─────────────────────────────────────────────────── */
+
+function getGlobalSettings() {
+    return {
+        model: localStorage.getItem("aprendelo_model") || "",
+        proficiency: localStorage.getItem("aprendelo_proficiency") || "B1"
+    };
+}
+
+function initSettings() {
+    const modelSelect = document.getElementById("global-model-select");
+    const profSelect = document.getElementById("global-proficiency-select");
+
+    if (!modelSelect || !profSelect) return;
+
+    // Load available models from server
+    loadModels(modelSelect).then(() => {
+        // Apply saved settings
+        const savedModel = localStorage.getItem("aprendelo_model");
+        if (savedModel) {
+            modelSelect.value = savedModel;
+        } else if (modelSelect.options.length > 0 && modelSelect.options[0].value) {
+            // default to first option if none saved
+            localStorage.setItem("aprendelo_model", modelSelect.options[0].value);
+            modelSelect.value = modelSelect.options[0].value;
+        }
+    });
+
+    const savedProf = localStorage.getItem("aprendelo_proficiency");
+    if (savedProf) {
+        profSelect.value = savedProf;
+    }
+
+    // Event listeners to save on change
+    modelSelect.addEventListener("change", () => {
+        localStorage.setItem("aprendelo_model", modelSelect.value);
+    });
+
+    profSelect.addEventListener("change", () => {
+        localStorage.setItem("aprendelo_proficiency", profSelect.value);
     });
 }
