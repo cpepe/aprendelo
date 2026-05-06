@@ -657,7 +657,7 @@ function initSentenceBuilder() {
         const proficiency = document.getElementById("sentence-proficiency").value;
         const model = modelSelect.value;
 
-        if (!topic) return;
+
         if (!model) {
             alert("Please select a model first.");
             return;
@@ -685,7 +685,7 @@ function initSentenceBuilder() {
             currentExercise = await resp.json();
             
             // Set up workspace
-            englishPrompt.textContent = currentExercise.english_prompt;
+            englishPrompt.textContent = currentExercise.english_translation;
             wordBank.innerHTML = "";
             constructionZone.innerHTML = "";
             
@@ -746,10 +746,11 @@ function initSentenceBuilder() {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    english_prompt: currentExercise.english_prompt,
+                    english_translation: currentExercise.english_translation,
                     user_sentence: userSentence,
                     proficiency,
-                    model
+                    model,
+                    words_provided: currentExercise.words
                 })
             });
 

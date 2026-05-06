@@ -8,6 +8,7 @@ No litellm — direct HTTP calls via requests.
 import json
 import re
 import requests
+import random
 
 OLLAMA_BASE = "http://localhost:11434"
 
@@ -203,21 +204,26 @@ def translate_text(model, text, source_lang, target_lang, proficiency="B1"):
 def generate_sentence_exercise(model, topic, proficiency="B1"):
     """
     Generates a sentence translation exercise based on a topic/verb and CEFR level.
-    Returns JSON containing 'english_prompt', 'spanish_translation', and 'words' (jumbled with distractors).
+    Returns JSON containing 'english_translation', 'test_sentence', and 'words' (jumbled with distractors).
     """
+    if not topic:
+        random_seeds = ["hablar", "comer", "vivir", "ser", "estar", "ir", "tener", "hacer", "viajar", "familia", "comida", "trabajo", "escuela", "tiempo", "ciudad", "amigo", "poder", "decir", "ver", "dar"]
+        topic = random.choice(random_seeds)
+
     system_prompt = (
         "You are a Spanish tutor generating a sentence construction exercise. "
-        f"Generate a single sentence related to the topic/verb provided by the user. "
-        f"Target a {proficiency} CEFR proficiency level for vocabulary and grammar. "
+        f"Generate a single natural, idiomatic Spanish sentence related to the topic/verb provided by the user. "
+        f"Then, provide a prompt in English to help the user understand the context. Target a {proficiency} CEFR proficiency level for vocabulary and grammar. "
         "Output ONLY valid JSON with the following structure:\n"
-        "{\n"
-        '  "english_prompt": "The english sentence",\n'
-        '  "spanish_translation": "La oración en español",\n'
+        "{\n"   
+        '  "english_translation": "The english sentence",\n'
+        '  "test_sentence": "La oración en español",\n'
         '  "words": ["la", "oración", "en", "español", "distractor1", "distractor2"]\n'
         "}\n"
-        "The 'words' array must contain all the words needed to form the 'spanish_translation', "
-        "plus 2 or 3 distractor words that make sense but are incorrect (e.g., wrong gender, wrong conjugation). "
-        "Make sure the 'words' array is randomly jumbled. "
+        "CRITICAL INSTRUCTIONS:\n"
+        "1. Ensure ALL words from the 'test_sentence' are exactly included in the 'words' array.\n"
+        "2. Add 2 to 4 additional words as distractors. These must be relevant to the topic but cannot be used to form a correct, cohesive sentence.\n"
+        "3. Ensure the 'words' array is randomly jumbled.\n"
         "Output nothing but the JSON object."
     )
 
@@ -244,7 +250,12 @@ def generate_sentence_exercise(model, topic, proficiency="B1"):
         content = data.get("message", {}).get("content", "").strip()
         # Parse and return JSON
         try:
-            return json.loads(content)
+            exercise = json.loads(content)
+            # Ensure the words array is actually shuffled by python just in case
+            if "words" in exercise and isinstance(exercise["words"], list):
+                random.shuffle(exercise["words"])
+            print(exercise)
+            return exercise
         except json.JSONDecodeError:
             raise RuntimeError("LLM did not return valid JSON.")
     except requests.ConnectionError:
@@ -253,18 +264,23 @@ def generate_sentence_exercise(model, topic, proficiency="B1"):
         raise RuntimeError(f"Failed to generate exercise: {str(e)}")
 
 
-def evaluate_sentence(model, english_prompt, user_sentence, proficiency="B1"):
+def evaluate_sentence(model, english_translation, user_sentence, proficiency="B1", words_provided=None):
     """
     Evaluates the user's Spanish sentence against the English prompt.
     Returns JSON containing 'correct' (bool), 'feedback' (str), and 'correction' (str).
     """
+    if words_provided is None:
+        words_provided = []
+        
     system_prompt = (
         "You are a Spanish tutor evaluating a student's translation. "
         "The student was given an English prompt to translate into Spanish. "
         f"Their CEFR level is {proficiency}. "
+        f"IMPORTANT CONTEXT: The student was ONLY given the following jumbled words to build their sentence: {words_provided}. "
+        "You are grading BOTH the student's attempt AND the sentence generator. "
+        "If the student built the best possible sentence using the provided words, even if it is slightly incorrect or missing words (like 'que', 'de', etc.) because the generator forgot to provide them, do NOT penalize the student. Set 'correct' to true and acknowledge the missing words in the feedback. "
+        "If the student made a genuine mistake using the provided words, set 'correct' to false, explain the error gently in English, and provide the ideal correction. "
         "Allow for natural Spanish flexibility (e.g., dropped pronouns, flexible word order, valid synonyms). "
-        "If the translation is completely correct, provide encouraging feedback and set 'correct' to true. "
-        "If it is incorrect or unnatural, set 'correct' to false, explain the error gently in English, and provide the ideal correction. "
         "Output ONLY valid JSON with the following structure:\n"
         "{\n"
         '  "correct": true|false,\n'
@@ -276,7 +292,7 @@ def evaluate_sentence(model, english_prompt, user_sentence, proficiency="B1"):
 
     messages = [
         {"role": "system", "content": system_prompt},
-        {"role": "user", "content": f"English Prompt: {english_prompt}\nUser Translation: {user_sentence}"},
+        {"role": "user", "content": f"English Prompt: {english_translation}\nUser Translation: {user_sentence}"},
     ]
 
     payload = {

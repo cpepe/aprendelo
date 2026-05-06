@@ -292,8 +292,6 @@ def sentence_builder_generate():
     proficiency = data.get("proficiency", "B1")
     model = data.get("model", "")
 
-    if not topic:
-        return jsonify({"error": "Topic cannot be empty."}), 400
     if not model:
         return jsonify({"error": "Please select a model."}), 400
 
@@ -308,24 +306,25 @@ def sentence_builder_generate():
 def sentence_builder_evaluate():
     """
     Evaluate the user's sentence.
-    Expects JSON: { "english_prompt": "...", "user_sentence": "...", "proficiency": "...", "model": "..." }
+    Expects JSON: { "english_translation": "...", "user_sentence": "...", "proficiency": "...", "model": "...", "words_provided": [...] }
     """
     data = request.get_json(silent=True)
     if not data:
         return jsonify({"error": "Request body must be JSON."}), 400
 
-    english_prompt = data.get("english_prompt", "").strip()
+    english_translation = data.get("english_translation", "").strip()
     user_sentence = data.get("user_sentence", "").strip()
     proficiency = data.get("proficiency", "B1")
     model = data.get("model", "")
+    words_provided = data.get("words_provided", [])
 
-    if not english_prompt or not user_sentence:
+    if not english_translation or not user_sentence:
         return jsonify({"error": "Missing prompt or user sentence."}), 400
     if not model:
         return jsonify({"error": "Please select a model."}), 400
 
     try:
-        evaluation = evaluate_sentence(model, english_prompt, user_sentence, proficiency)
+        evaluation = evaluate_sentence(model, english_translation, user_sentence, proficiency, words_provided)
         return jsonify(evaluation)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
