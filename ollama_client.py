@@ -204,7 +204,9 @@ def translate_text(model, text, source_lang, target_lang, proficiency="B1"):
 def generate_sentence_exercise(model, topic, proficiency="B1"):
     """
     Generates a sentence translation exercise based on a topic/verb and CEFR level.
-    Returns JSON containing 'english_translation', 'test_sentence', and 'words' (jumbled with distractors).
+    The LLM returns 'english_translation', 'test_sentence', and 'distractors'.
+    Python then splits test_sentence into words, merges with distractors, and shuffles.
+    Returns JSON containing 'english_translation', 'test_sentence', and 'words'.
     """
     if not topic:
         random_seeds = ["hablar", "comer", "vivir", "ser", "estar", "ir", "tener", "hacer", "viajar", "familia", "comida", "trabajo", "escuela", "tiempo", "ciudad", "amigo", "poder", "decir", "ver", "dar"]
@@ -215,15 +217,15 @@ def generate_sentence_exercise(model, topic, proficiency="B1"):
         f"Generate a single natural, idiomatic Spanish sentence related to the topic/verb provided by the user. "
         f"Then, provide a prompt in English to help the user understand the context. Target a {proficiency} CEFR proficiency level for vocabulary and grammar. "
         "Output ONLY valid JSON with the following structure:\n"
-        "{\n"   
+        "{\n"
         '  "english_translation": "The english sentence",\n'
         '  "test_sentence": "La oración en español",\n'
-        '  "words": ["la", "oración", "en", "español", "distractor1", "distractor2"]\n'
+        '  "distractors": ["falsa1", "falsa2", "falsa3", "falsa4"]\n'
         "}\n"
         "CRITICAL INSTRUCTIONS:\n"
-        "1. Ensure ALL words from the 'test_sentence' are exactly included in the 'words' array.\n"
-        "2. Add 2 to 4 additional words as distractors. These must be relevant to the topic but cannot be used to form a correct, cohesive sentence.\n"
-        "3. Ensure the 'words' array is randomly jumbled.\n"
+        "1. The 'test_sentence' must be a complete, grammatically correct Spanish sentence.\n"
+        "2. Provide 4 to 8 distractor words in the 'distractors' array. These must be real Spanish words relevant to the topic but must NOT appear in the test_sentence.\n"
+        "3. Distractors should be plausible but must not allow a second valid sentence to be formed.\n"
         "Output nothing but the JSON object."
     )
 
@@ -248,14 +250,26 @@ def generate_sentence_exercise(model, topic, proficiency="B1"):
         resp.raise_for_status()
         data = resp.json()
         content = data.get("message", {}).get("content", "").strip()
-        # Parse and return JSON
         try:
             exercise = json.loads(content)
-            # Ensure the words array is actually shuffled by python just in case
-            if "words" in exercise and isinstance(exercise["words"], list):
-                random.shuffle(exercise["words"])
-            print(exercise)
-            return exercise
+
+            # Build the word list deterministically from the test_sentence
+            test_sentence = exercise.get("test_sentence", "")
+            sentence_words = test_sentence.split()
+            distractors = exercise.get("distractors", [])
+
+            # Combine sentence words + distractors and shuffle
+            all_words = sentence_words + distractors
+            random.shuffle(all_words)
+
+            # Return a clean response with the python-built words list
+            result = {
+                "english_translation": exercise.get("english_translation", ""),
+                "test_sentence": test_sentence,
+                "words": all_words,
+            }
+            print(result)
+            return result
         except json.JSONDecodeError:
             raise RuntimeError("LLM did not return valid JSON.")
     except requests.ConnectionError:
