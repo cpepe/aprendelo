@@ -983,3 +983,43 @@ body {
     font-size: 1.25rem;
     opacity: 0.5;
 }
+
+/* ── Sentence Builder ─────────────────────────────────────────── */
+
+.word-tile {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s var(--ease);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.word-tile:hover {
+    background: var(--bg-hover);
+    border-color: var(--accent-1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.word-tile:active {
+    transform: translateY(0);
+}
+
+.word-tile.in-construction {
+    background: var(--accent-gradient);
+    color: #1a1a1a;
+    border: none;
+    font-weight: 600;
+}
+
+.word-tile.in-construction:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}

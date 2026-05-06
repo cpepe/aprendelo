@@ -198,3 +198,109 @@ def translate_text(model, text, source_lang, target_lang, proficiency="B1"):
             raise RuntimeError(f"Translation failed: {str(e)}")
 
     return "\n\n".join(translated_chunks)
+
+
+def generate_sentence_exercise(model, topic, proficiency="B1"):
+    """
+    Generates a sentence translation exercise based on a topic/verb and CEFR level.
+    Returns JSON containing 'english_prompt', 'spanish_translation', and 'words' (jumbled with distractors).
+    """
+    system_prompt = (
+        "You are a Spanish tutor generating a sentence construction exercise. "
+        f"Generate a single sentence related to the topic/verb provided by the user. "
+        f"Target a {proficiency} CEFR proficiency level for vocabulary and grammar. "
+        "Output ONLY valid JSON with the following structure:\n"
+        "{\n"
+        '  "english_prompt": "The english sentence",\n'
+        '  "spanish_translation": "La oración en español",\n'
+        '  "words": ["la", "oración", "en", "español", "distractor1", "distractor2"]\n'
+        "}\n"
+        "The 'words' array must contain all the words needed to form the 'spanish_translation', "
+        "plus 2 or 3 distractor words that make sense but are incorrect (e.g., wrong gender, wrong conjugation). "
+        "Make sure the 'words' array is randomly jumbled. "
+        "Output nothing but the JSON object."
+    )
+
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": f"Topic/Verb: {topic}"},
+    ]
+
+    payload = {
+        "model": model,
+        "messages": messages,
+        "stream": False,
+        "format": "json"
+    }
+
+    try:
+        resp = requests.post(
+            f"{OLLAMA_BASE}/api/chat",
+            json=payload,
+            timeout=60,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        content = data.get("message", {}).get("content", "").strip()
+        # Parse and return JSON
+        try:
+            return json.loads(content)
+        except json.JSONDecodeError:
+            raise RuntimeError("LLM did not return valid JSON.")
+    except requests.ConnectionError:
+        raise RuntimeError("Cannot connect to Ollama. Is it running on localhost:11434?")
+    except Exception as e:
+        raise RuntimeError(f"Failed to generate exercise: {str(e)}")
+
+
+def evaluate_sentence(model, english_prompt, user_sentence, proficiency="B1"):
+    """
+    Evaluates the user's Spanish sentence against the English prompt.
+    Returns JSON containing 'correct' (bool), 'feedback' (str), and 'correction' (str).
+    """
+    system_prompt = (
+        "You are a Spanish tutor evaluating a student's translation. "
+        "The student was given an English prompt to translate into Spanish. "
+        f"Their CEFR level is {proficiency}. "
+        "Allow for natural Spanish flexibility (e.g., dropped pronouns, flexible word order, valid synonyms). "
+        "If the translation is completely correct, provide encouraging feedback and set 'correct' to true. "
+        "If it is incorrect or unnatural, set 'correct' to false, explain the error gently in English, and provide the ideal correction. "
+        "Output ONLY valid JSON with the following structure:\n"
+        "{\n"
+        '  "correct": true|false,\n'
+        '  "feedback": "Explanation of what was good or what went wrong.",\n'
+        '  "correction": "The ideal Spanish sentence."\n'
+        "}\n"
+        "Output nothing but the JSON object."
+    )
+
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": f"English Prompt: {english_prompt}\nUser Translation: {user_sentence}"},
+    ]
+
+    payload = {
+        "model": model,
+        "messages": messages,
+        "stream": False,
+        "format": "json"
+    }
+
+    try:
+        resp = requests.post(
+            f"{OLLAMA_BASE}/api/chat",
+            json=payload,
+            timeout=60,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        content = data.get("message", {}).get("content", "").strip()
+        # Parse and return JSON
+        try:
+            return json.loads(content)
+        except json.JSONDecodeError:
+            raise RuntimeError("LLM did not return valid JSON.")
+    except requests.ConnectionError:
+        raise RuntimeError("Cannot connect to Ollama. Is it running on localhost:11434?")
+    except Exception as e:
+        raise RuntimeError(f"Failed to evaluate sentence: {str(e)}")

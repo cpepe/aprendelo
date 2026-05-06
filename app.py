@@ -17,7 +17,7 @@ from flask import (
     Flask, Response, jsonify, render_template, request, send_file, stream_with_context,
 )
 import re
-from ollama_client import list_models, chat_stream, translate_text, restructure_for_translation
+from ollama_client import list_models, chat_stream, translate_text, restructure_for_translation, generate_sentence_exercise, evaluate_sentence
 from booklet_builder import build_bilingual_pdf
 
 # ── App setup ────────────────────────────────────────────────────────
@@ -273,6 +273,62 @@ def build_booklet():
         as_attachment=True,
         download_name=filename,
     )
+
+
+# ── Sentence Builder API ───────────────────────────────────────────
+
+
+@app.route("/api/sentence-builder/generate", methods=["POST"])
+def sentence_builder_generate():
+    """
+    Generate a new sentence construction exercise.
+    Expects JSON: { "topic": "...", "proficiency": "...", "model": "..." }
+    """
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({"error": "Request body must be JSON."}), 400
+
+    topic = data.get("topic", "").strip()
+    proficiency = data.get("proficiency", "B1")
+    model = data.get("model", "")
+
+    if not topic:
+        return jsonify({"error": "Topic cannot be empty."}), 400
+    if not model:
+        return jsonify({"error": "Please select a model."}), 400
+
+    try:
+        exercise = generate_sentence_exercise(model, topic, proficiency)
+        return jsonify(exercise)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/sentence-builder/evaluate", methods=["POST"])
+def sentence_builder_evaluate():
+    """
+    Evaluate the user's sentence.
+    Expects JSON: { "english_prompt": "...", "user_sentence": "...", "proficiency": "...", "model": "..." }
+    """
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({"error": "Request body must be JSON."}), 400
+
+    english_prompt = data.get("english_prompt", "").strip()
+    user_sentence = data.get("user_sentence", "").strip()
+    proficiency = data.get("proficiency", "B1")
+    model = data.get("model", "")
+
+    if not english_prompt or not user_sentence:
+        return jsonify({"error": "Missing prompt or user sentence."}), 400
+    if not model:
+        return jsonify({"error": "Please select a model."}), 400
+
+    try:
+        evaluation = evaluate_sentence(model, english_prompt, user_sentence, proficiency)
+        return jsonify(evaluation)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 # ── Main ─────────────────────────────────────────────────────────────

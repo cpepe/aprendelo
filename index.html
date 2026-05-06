@@ -43,6 +43,10 @@
                 <span class="tab-icon">📖</span>
                 <span class="tab-label">Booklet</span>
             </button>
+            <button class="nav-tab" data-tab="sentence" id="nav-sentence">
+                <span class="tab-icon">🧩</span>
+                <span class="tab-label">Builder</span>
+            </button>
             <button class="nav-tab" data-tab="tools" id="nav-tools">
                 <span class="tab-icon">🛠️</span>
                 <span class="tab-label">Tools</span>
@@ -240,6 +244,94 @@
                 </form>
                 <div id="booklet-status" class="status-message hidden"></div>
                 <div id="booklet-error" class="error-message hidden"></div>
+            </div>
+            <!-- %LOCAL_ONLY_END% -->
+        </section>
+
+        <!-- ══════════ Sentence Builder ══════════ -->
+        <section id="section-sentence" class="tab-section">
+            <div class="section-header">
+                <h1>Sentence Builder</h1>
+                <p class="section-subtitle">Practice grammar and vocabulary by building sentences</p>
+            </div>
+            <div class="local-disabled-message"
+                style="text-align: center; padding: 3rem 1rem; background: var(--bg-surface); border: 1px dashed var(--border); border-radius: var(--radius-lg); margin-top: 1rem;">
+                <h2 style="color: var(--text-muted); margin-bottom: 0.5rem;">Disabled in static site</h2>
+                <p style="color: var(--text-secondary); font-size: 0.95rem;">This advanced feature requires the local
+                    Python server to be running.</p>
+            </div>
+            <!-- %LOCAL_ONLY_START% -->
+            <div class="sentence-container">
+                <form id="sentence-form" class="booklet-form">
+                    <div class="form-grid">
+                        <div class="input-field">
+                            <label for="sentence-topic">Topic or Verb</label>
+                            <input type="text" id="sentence-topic" placeholder="e.g. Ordering food, viajar, ser vs estar" required>
+                        </div>
+                        <div class="input-field">
+                            <label for="sentence-proficiency">Proficiency</label>
+                            <select id="sentence-proficiency">
+                                <option value="A1">A1 — Beginner</option>
+                                <option value="A2">A2 — Elementary</option>
+                                <option value="B1" selected>B1 — Intermediate</option>
+                                <option value="B2">B2 — Upper Intermediate</option>
+                                <option value="C1">C1 — Advanced</option>
+                                <option value="C2">C2 — Mastery</option>
+                            </select>
+                        </div>
+                        <div class="input-field">
+                            <label for="sentence-model">Ollama Model</label>
+                            <select id="sentence-model">
+                                <option value="">Loading models…</option>
+                            </select>
+                        </div>
+                        <div class="input-field" style="display: flex; align-items: flex-end;">
+                            <button type="submit" class="btn btn-primary" id="btn-generate-sentence" style="width: 100%; margin-bottom: 4px;">
+                                <span class="btn-text">Generate Exercise</span>
+                                <span class="btn-spinner hidden" id="sentence-generate-spinner"></span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <div id="sentence-workspace" class="hidden" style="margin-top: 2rem;">
+                    <div class="prompt-card" style="margin-bottom: 1.5rem; text-align: center;">
+                        <h3 style="color: var(--text-secondary); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">Translate to Spanish:</h3>
+                        <p id="sentence-english-prompt" class="english-prompt-text" style="font-size: 1.5rem; font-weight: 600; color: var(--text-primary); margin-top: 0.5rem;"></p>
+                    </div>
+
+                    <div class="construction-area" style="min-height: 80px; padding: 1rem; border: 2px dashed var(--border); border-radius: var(--radius-lg); background: rgba(255,255,255,0.02); margin-bottom: 1.5rem; display: flex; flex-wrap: wrap; gap: 0.5rem; align-content: flex-start;">
+                        <div id="sentence-construction-zone" class="drop-zone" style="display: flex; flex-wrap: wrap; gap: 0.5rem; width: 100%; min-height: 48px;">
+                            <!-- Clicked words go here -->
+                        </div>
+                    </div>
+
+                    <div class="word-bank-area" style="padding: 1.5rem; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border); margin-bottom: 2rem;">
+                        <div id="sentence-word-bank" class="word-bank" style="display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; min-height: 48px;">
+                            <!-- Jumbled words go here -->
+                        </div>
+                    </div>
+
+                    <div class="action-row" style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 2rem;">
+                        <button class="btn btn-primary btn-lg" id="btn-check-sentence">
+                            <span class="btn-text">Check Answer</span>
+                            <span class="btn-spinner hidden" id="sentence-check-spinner"></span>
+                        </button>
+                        <button class="btn btn-ghost" id="btn-reset-sentence">Reset Words</button>
+                    </div>
+
+                    <div id="sentence-feedback" class="feedback-card hidden" style="padding: 1.5rem; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border);">
+                        <!-- LLM Feedback goes here -->
+                        <div id="sentence-feedback-icon" style="font-size: 2rem; margin-bottom: 0.5rem;"></div>
+                        <p id="sentence-feedback-text" style="line-height: 1.5; color: var(--text-primary);"></p>
+                        <div id="sentence-correction-area" class="hidden" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                            <h4 style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 0.25rem;">Ideal Correction:</h4>
+                            <p id="sentence-correction-text" style="font-weight: 500; color: var(--primary);"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="sentence-error" class="error-message hidden" style="margin-top: 1rem;"></div>
             </div>
             <!-- %LOCAL_ONLY_END% -->
         </section>

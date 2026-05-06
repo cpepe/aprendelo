@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initChat();
     initBooklet();
     initTranslate();
+    initSentenceBuilder();
 });
 
 /* ── Tab Navigation ───────────────────────────────────────────── */
@@ -622,4 +623,161 @@ function showStatus(el, message) {
 
 function scrollToBottom(el) {
     el.scrollTop = el.scrollHeight;
+}
+
+/* ── Sentence Builder ─────────────────────────────────────────── */
+
+function initSentenceBuilder() {
+    const form = document.getElementById("sentence-form");
+    const modelSelect = document.getElementById("sentence-model");
+    const btnGenerate = document.getElementById("btn-generate-sentence");
+    const spinnerGenerate = document.getElementById("sentence-generate-spinner");
+    const errorDiv = document.getElementById("sentence-error");
+    const workspace = document.getElementById("sentence-workspace");
+    const englishPrompt = document.getElementById("sentence-english-prompt");
+    const wordBank = document.getElementById("sentence-word-bank");
+    const constructionZone = document.getElementById("sentence-construction-zone");
+    const btnCheck = document.getElementById("btn-check-sentence");
+    const spinnerCheck = document.getElementById("sentence-check-spinner");
+    const btnReset = document.getElementById("btn-reset-sentence");
+    const feedbackCard = document.getElementById("sentence-feedback");
+    const feedbackIcon = document.getElementById("sentence-feedback-icon");
+    const feedbackText = document.getElementById("sentence-feedback-text");
+    const correctionArea = document.getElementById("sentence-correction-area");
+    const correctionText = document.getElementById("sentence-correction-text");
+
+    let currentExercise = null;
+
+    // Load models
+    loadModels(modelSelect);
+
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const topic = document.getElementById("sentence-topic").value.trim();
+        const proficiency = document.getElementById("sentence-proficiency").value;
+        const model = modelSelect.value;
+
+        if (!topic) return;
+        if (!model) {
+            alert("Please select a model first.");
+            return;
+        }
+
+        errorDiv.classList.add("hidden");
+        workspace.classList.add("hidden");
+        feedbackCard.classList.add("hidden");
+        
+        btnGenerate.disabled = true;
+        spinnerGenerate.classList.remove("hidden");
+
+        try {
+            const resp = await fetch("/api/sentence-builder/generate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ topic, proficiency, model })
+            });
+
+            if (!resp.ok) {
+                const errData = await resp.json();
+                throw new Error(errData.error || "Generation failed");
+            }
+
+            currentExercise = await resp.json();
+            
+            // Set up workspace
+            englishPrompt.textContent = currentExercise.english_prompt;
+            wordBank.innerHTML = "";
+            constructionZone.innerHTML = "";
+            
+            currentExercise.words.forEach(word => {
+                const tile = document.createElement("div");
+                tile.className = "word-tile";
+                tile.textContent = word;
+                tile.addEventListener("click", () => moveTile(tile));
+                wordBank.appendChild(tile);
+            });
+
+            workspace.classList.remove("hidden");
+        } catch (err) {
+            showError(errorDiv, err.message);
+        } finally {
+            btnGenerate.disabled = false;
+            spinnerGenerate.classList.add("hidden");
+        }
+    });
+
+    function moveTile(tile) {
+        if (tile.parentElement === wordBank) {
+            constructionZone.appendChild(tile);
+            tile.classList.add("in-construction");
+        } else {
+            wordBank.appendChild(tile);
+            tile.classList.remove("in-construction");
+        }
+    }
+
+    btnReset.addEventListener("click", () => {
+        const tiles = Array.from(constructionZone.children);
+        tiles.forEach(tile => {
+            wordBank.appendChild(tile);
+            tile.classList.remove("in-construction");
+        });
+        feedbackCard.classList.add("hidden");
+    });
+
+    btnCheck.addEventListener("click", async () => {
+        const selectedTiles = Array.from(constructionZone.children);
+        if (selectedTiles.length === 0) {
+            alert("Please build a sentence first.");
+            return;
+        }
+
+        const userSentence = selectedTiles.map(t => t.textContent).join(" ");
+        const model = modelSelect.value;
+        const proficiency = document.getElementById("sentence-proficiency").value;
+
+        btnCheck.disabled = true;
+        spinnerCheck.classList.remove("hidden");
+        feedbackCard.classList.add("hidden");
+        errorDiv.classList.add("hidden");
+
+        try {
+            const resp = await fetch("/api/sentence-builder/evaluate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    english_prompt: currentExercise.english_prompt,
+                    user_sentence: userSentence,
+                    proficiency,
+                    model
+                })
+            });
+
+            if (!resp.ok) {
+                const errData = await resp.json();
+                throw new Error(errData.error || "Evaluation failed");
+            }
+
+            const evaluation = await resp.json();
+            
+            feedbackCard.classList.remove("hidden");
+            if (evaluation.correct) {
+                feedbackCard.style.borderColor = "var(--success)";
+                feedbackIcon.textContent = "✅";
+                correctionArea.classList.add("hidden");
+            } else {
+                feedbackCard.style.borderColor = "var(--error)";
+                feedbackIcon.textContent = "❌";
+                correctionArea.classList.remove("hidden");
+                correctionText.textContent = evaluation.correction;
+            }
+            feedbackText.textContent = evaluation.feedback;
+
+        } catch (err) {
+            showError(errorDiv, err.message);
+        } finally {
+            btnCheck.disabled = false;
+            spinnerCheck.classList.add("hidden");
+        }
+    });
 }
