@@ -372,6 +372,39 @@ body {
 
 /* ── Flashcard ────────────────────────────────────────────────── */
 
+.flashcard-subtabs {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+.subtab {
+    padding: 0.5rem 1.25rem;
+    border: 1px solid var(--border);
+    background: var(--bg-surface);
+    color: var(--text-secondary);
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition: all var(--duration) var(--ease);
+}
+
+.subtab:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.subtab.active {
+    background: var(--accent-gradient);
+    color: #1a1a1a;
+    border-color: transparent;
+    font-weight: 600;
+    box-shadow: 0 2px 12px rgba(245, 158, 11, 0.25);
+}
+
 .flashcard-container {
     display: flex;
     flex-direction: column;

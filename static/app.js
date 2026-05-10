@@ -34,26 +34,36 @@ function initTabs() {
     });
 }
 
-/* ── Flashcards ───────────────────────────────────────────────── */
-
 function initFlashcards() {
     const card = document.getElementById("flashcard");
     const frontWord = document.getElementById("card-front-word");
     const backWord = document.getElementById("card-back-word");
+    const frontLabel = document.getElementById("card-front-label");
+    const backLabel = document.getElementById("card-back-label");
     const btnNext = document.getElementById("btn-next-card");
+    const subtabContainer = document.getElementById("flashcard-subtabs");
+
+    // Game configurations — the single engine renders all three
+    const GAMES = [
+        { id: "flashcards", file: "./static/flashcards.json", frontLabel: "Español", backLabel: "English", mode: "text" },
+        { id: "flash-phrases", file: "./static/flash-phrases.json", frontLabel: "English", backLabel: "Español", mode: "text" },
+        { id: "flash-images", file: "./static/flash-images.json", frontLabel: "Image", backLabel: "Español", mode: "image" },
+    ];
+
+    let currentGameIndex = 0;
+    const dataCache = {}; // keyed by game id
 
     function flipCard() {
         card.classList.toggle("flipped");
     }
 
-    let flashcardsData = null;
-
-    async function ensureFlashcards() {
-        if (flashcardsData) return flashcardsData;
+    async function ensureData() {
+        const game = GAMES[currentGameIndex];
+        if (dataCache[game.id]) return dataCache[game.id];
         try {
-            const resp = await fetch("./static/flashcards.json");
-            flashcardsData = await resp.json();
-            return flashcardsData;
+            const resp = await fetch(game.file);
+            dataCache[game.id] = await resp.json();
+            return dataCache[game.id];
         } catch (err) {
             return null;
         }
@@ -61,8 +71,13 @@ function initFlashcards() {
 
     async function loadCard() {
         card.classList.remove("flipped");
+        const game = GAMES[currentGameIndex];
 
-        const data = await ensureFlashcards();
+        // Update labels
+        frontLabel.textContent = game.frontLabel;
+        backLabel.textContent = game.backLabel;
+
+        const data = await ensureData();
         if (!data) {
             frontWord.textContent = "Error";
             backWord.textContent = "Could not load cards";
@@ -77,15 +92,40 @@ function initFlashcards() {
         }
 
         const randomKey = keys[Math.floor(Math.random() * keys.length)];
-        const spanish = randomKey;
-        const english = data[randomKey];
 
         // Small delay so the un-flip animation finishes
         setTimeout(() => {
-            frontWord.textContent = spanish;
-            backWord.textContent = english;
+            if (game.mode === "image") {
+                // Image mode: front = emoji/image, back = Spanish word
+                frontWord.textContent = randomKey;
+                frontWord.style.fontSize = "4rem";
+                backWord.textContent = data[randomKey];
+            } else {
+                // Text mode: front = Spanish, back = English
+                frontWord.textContent = randomKey;
+                frontWord.style.fontSize = "";
+                backWord.textContent = data[randomKey];
+            }
         }, 150);
     }
+
+    // Sub-tab switching
+    subtabContainer.addEventListener("click", (e) => {
+        const btn = e.target.closest(".subtab");
+        if (!btn) return;
+        const gameIndex = parseInt(btn.dataset.game, 10);
+        if (gameIndex === currentGameIndex) return;
+
+        currentGameIndex = gameIndex;
+        subtabContainer.querySelectorAll(".subtab").forEach(s => s.classList.remove("active"));
+        btn.classList.add("active");
+
+        // Clear stale content immediately before loading new card
+        frontWord.textContent = "";
+        backWord.textContent = "";
+        frontWord.style.fontSize = "";
+        loadCard();
+    });
 
     card.addEventListener("click", flipCard);
     btnNext.addEventListener("click", loadCard);

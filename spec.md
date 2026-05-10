@@ -19,7 +19,7 @@ The application utilizes a **Hybrid Static/Local Architecture**, bypassing the n
 *   **Data**: All pairs are stored in flashcards.json. The data set contains both individual words and phrases at the B2 level.
 ##### 2.1.2 Flash-phrases Mini-Game (Static JavaScript)
 *   **Functionality**: Presents interactive flashcards for vocabulary recall testing. The user can flip the card and proceed to the next random vocabulary word.
-*   **Implementation**: Completely stateless. The JavaScript fetches a single static `flash-phrases.json` payload mapped to `{spanish: english}` logic from the exact same domain, randomizing and displaying the sets exclusively on the client side natively.
+*   **Implementation**: Completely stateless. The JavaScript fetches a single static `flash-phrases.json` payload mapped to `{english: spanish}` logic from the exact same domain, randomizing and displaying the sets exclusively on the client side natively.
 *   **Data**: All pairs are stored in flash-phrases.json. The data set contains sentences and phrases at the B2 level. It contains examples of all tenses.
 ##### 2.1.3 Flash-images Mini-Game (Static JavaScript)
 *   **Functionality**: Presents interactive flashcards for vocabulary recall testing. The user can flip the card and proceed to the next random vocabulary word.
@@ -45,7 +45,9 @@ The application utilizes a **Hybrid Static/Local Architecture**, bypassing the n
 *   **Implementation Considerations**: Demands extensive context allocations locally for translation logic. Incorporates an optional toggle to bypass structural rewriting if text fits required paragraph layouts natively. Outputs generated dynamically via python binaries sent locally down the pipe mapping to a downloaded file descriptor.
 
 #### 2.6. Sentence Builder (Local Backend)
-*   **Functionality**: Generates dynamic sentence construction exercises. The user inputs a target verb, topic, or grammar rule along with their CEFR level (A1-C2). If no word is input use a random word to seed the LLM. The local LLM generates spanish sentence and corresponding English translation. The spanish sentence is provided as jumbled, interactive tiles (including additional words as distractors). Ensure all from the spanish sentence are included in the tiles. (additional tiles should be relevant but not form a cohesive sentence). Advanced mode hides the tiles, and let's the user enter their response into a text field.
+*   **Functionality**: Generates dynamic sentence construction exercises. The user inputs a target verb, topic, or grammar rule along with their CEFR level (A1-C2). If no word is input use a random word to seed the LLM. The local LLM generates spanish sentence and corresponding English translation. The spanish sentence is provided as jumbled, interactive tiles (including additional words as distractors). Ensure all from the spanish sentence are included in the tiles. (additional tiles should be relevant but not form a cohesive sentence). Advanced mode hides the tiles, and let's the user enter their response into a text field. Additionally generated sentence and translations are written to flash-phrases.json to create additional flashcards on the fly.
+
+When the backend is not available Sentence Builder users flash-phrases.json to create sentences and translations.
 *   **User Experience**: Features a drag-and-drop workspace (or staging area) where users can assemble and reorder the tiles to form the complete sentence. Instead of restrictive, frustrating word-by-word error checking, users submit their completed sentence for evaluation. If the user clicks the "Advanced" button the tiles are hidden and a text field is displayed. In advanced mode a "Tiles" button is displayed. If the Tiles button is clicked the text field is hidden and the tiles are displayed. Whether advanced or tile mode the result submitted for grading.
 
 When clicked, the "Reset Words" button scrambles the tiles.

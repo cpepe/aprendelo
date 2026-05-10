@@ -66,15 +66,20 @@
                 <h1>Flashcard Practice</h1>
                 <p class="section-subtitle">Click the card to reveal the translation</p>
             </div>
+            <div class="flashcard-subtabs" id="flashcard-subtabs">
+                <button class="subtab active" data-game="0" id="subtab-words">🃏 Words</button>
+                <button class="subtab" data-game="1" id="subtab-phrases">💬 Phrases</button>
+                <button class="subtab" data-game="2" id="subtab-images">🖼️ Images</button>
+            </div>
             <div class="flashcard-container">
                 <div class="flashcard" id="flashcard" tabindex="0">
                     <div class="flashcard-inner" id="flashcard-inner">
                         <div class="flashcard-front">
-                            <span class="card-lang-label">Español</span>
+                            <span class="card-lang-label" id="card-front-label">Español</span>
                             <span class="card-word" id="card-front-word">hola</span>
                         </div>
                         <div class="flashcard-back">
-                            <span class="card-lang-label">English</span>
+                            <span class="card-lang-label" id="card-back-label">English</span>
                             <span class="card-word" id="card-back-word">hello</span>
                         </div>
                     </div>
