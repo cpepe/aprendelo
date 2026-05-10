@@ -809,11 +809,17 @@ function initSentenceBuilder() {
             }
         }
         
-        // Hide toggle mode if in static mode (Advanced mode is disabled)
+        // Hide toggle mode and disable topic input if in static mode
+        const topicInput = document.getElementById("sentence-topic");
         if (isStaticMode) {
             btnToggleMode.classList.add("hidden");
+            topicInput.disabled = true;
+            topicInput.value = "";
+            topicInput.placeholder = "Disabled in static mode (Random)";
         } else {
             btnToggleMode.classList.remove("hidden");
+            topicInput.disabled = false;
+            topicInput.placeholder = "e.g. Ordering food, viajar, ser vs estar";
         }
 
         try {
