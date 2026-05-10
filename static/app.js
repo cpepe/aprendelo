@@ -650,6 +650,83 @@ function scrollToBottom(el) {
     el.scrollTop = el.scrollHeight;
 }
 
+/* ── Sentence Builder Static Fallback ─────────────────────────── */
+
+let cachedFlashPhrases = null;
+
+async function loadFlashPhrases() {
+    if (cachedFlashPhrases) return cachedFlashPhrases;
+    try {
+        const resp = await fetch("./static/flash-phrases.json");
+        cachedFlashPhrases = await resp.json();
+        return cachedFlashPhrases;
+    } catch (err) {
+        console.error("Failed to load flash-phrases.json", err);
+        return null;
+    }
+}
+
+async function generateStaticExercise() {
+    const phrases = await loadFlashPhrases();
+    if (!phrases || Object.keys(phrases).length === 0) {
+        throw new Error("No phrases available for static fallback.");
+    }
+    
+    const entries = Object.entries(phrases);
+    const [english, spanish] = entries[Math.floor(Math.random() * entries.length)];
+    
+    // Clean and split words
+    const normalizeWords = s => s.replace(/[.,!?¿¡]/g, '').trim().split(/\s+/).filter(w => w.length > 0);
+    const sentenceWords = normalizeWords(spanish);
+    const allSpanishWords = entries.flatMap(([_, s]) => normalizeWords(s));
+    
+    // Pick 4 to 8 random distractors that are not in the current sentence
+    const distractors = [];
+    const numDistractors = Math.floor(Math.random() * 5) + 4;
+    let attempts = 0;
+    while (distractors.length < numDistractors && attempts < 100) {
+        const candidate = allSpanishWords[Math.floor(Math.random() * allSpanishWords.length)];
+        if (!sentenceWords.includes(candidate) && !distractors.includes(candidate)) {
+            distractors.push(candidate);
+        }
+        attempts++;
+    }
+
+    const allWords = [...sentenceWords, ...distractors];
+    
+    // Shuffle allWords
+    for (let i = allWords.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [allWords[i], allWords[j]] = [allWords[j], allWords[i]];
+    }
+
+    return {
+        english_translation: english,
+        test_sentence: spanish,
+        words: allWords
+    };
+}
+
+function evaluateStaticSentence(exercise, userSentence) {
+    const normalize = s => s.toLowerCase().replace(/[.,¡!¿?]/g, '').trim();
+    const normUser = normalize(userSentence);
+    const normTarget = normalize(exercise.test_sentence);
+
+    if (normUser === normTarget) {
+        return {
+            correct: true,
+            feedback: "¡Excelente! (Static Evaluation)",
+            correction: ""
+        };
+    } else {
+        return {
+            correct: false,
+            feedback: "Not quite right. Make sure you use all the required words in the correct order. (Static Evaluation)",
+            correction: exercise.test_sentence
+        };
+    }
+}
+
 /* ── Sentence Builder ─────────────────────────────────────────── */
 
 function initSentenceBuilder() {
@@ -682,16 +759,12 @@ function initSentenceBuilder() {
 
     let currentExercise = null;
     let isAdvancedMode = false;
+    let isStaticMode = false;
 
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
         const topic = document.getElementById("sentence-topic").value.trim();
         const { model, proficiency } = getGlobalSettings();
-
-        if (!model) {
-            alert("Please select an Ollama Model in the Settings tab.");
-            return;
-        }
 
         errorDiv.classList.add("hidden");
         workspace.classList.add("hidden");
@@ -709,6 +782,7 @@ function initSentenceBuilder() {
         spinnerGenerate.classList.remove("hidden");
 
         try {
+            if (!model) throw new Error("No model selected. Falling back to static mode.");
             const resp = await fetch("/api/sentence-builder/generate", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -716,12 +790,33 @@ function initSentenceBuilder() {
             });
 
             if (!resp.ok) {
-                const errData = await resp.json();
+                const errData = await resp.json().catch(()=>({}));
                 throw new Error(errData.error || "Generation failed");
             }
 
             currentExercise = await resp.json();
-            
+            isStaticMode = false;
+        } catch (err) {
+            console.warn(err.message, "Using static fallback.");
+            try {
+                currentExercise = await generateStaticExercise();
+                isStaticMode = true;
+            } catch (staticErr) {
+                showError(errorDiv, "Failed to generate exercise in static mode. " + staticErr.message);
+                btnGenerate.disabled = false;
+                spinnerGenerate.classList.add("hidden");
+                return;
+            }
+        }
+        
+        // Hide toggle mode if in static mode (Advanced mode is disabled)
+        if (isStaticMode) {
+            btnToggleMode.classList.add("hidden");
+        } else {
+            btnToggleMode.classList.remove("hidden");
+        }
+
+        try {
             // Set up workspace
             englishPrompt.textContent = currentExercise.english_translation;
             wordBank.innerHTML = "";
@@ -736,8 +831,6 @@ function initSentenceBuilder() {
             });
 
             workspace.classList.remove("hidden");
-        } catch (err) {
-            showError(errorDiv, err.message);
         } finally {
             btnGenerate.disabled = false;
             spinnerGenerate.classList.add("hidden");
@@ -819,6 +912,10 @@ function initSentenceBuilder() {
         errorDiv.classList.add("hidden");
 
         try {
+            if (isStaticMode) {
+                throw new Error("Static mode evaluation");
+            }
+
             const resp = await fetch("/api/sentence-builder/evaluate", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -832,12 +929,27 @@ function initSentenceBuilder() {
             });
 
             if (!resp.ok) {
-                const errData = await resp.json();
-                throw new Error(errData.error || "Evaluation failed");
+                const errData = await resp.json().catch(()=>({}));
+                throw new Error(errData.error || "Evaluation fetch failed");
             }
 
             const evaluation = await resp.json();
-            
+            handleEvaluationResult(evaluation);
+
+        } catch (err) {
+            if (isStaticMode || err.message.includes("fetch failed")) {
+                console.warn("Using static evaluation fallback.");
+                const evaluation = evaluateStaticSentence(currentExercise, userSentence);
+                handleEvaluationResult(evaluation);
+            } else {
+                showError(errorDiv, err.message);
+            }
+        } finally {
+            btnCheck.disabled = false;
+            spinnerCheck.classList.add("hidden");
+        }
+
+        function handleEvaluationResult(evaluation) {
             feedbackCard.classList.remove("hidden");
             if (evaluation.correct) {
                 feedbackCard.style.borderColor = "var(--success)";
@@ -850,12 +962,6 @@ function initSentenceBuilder() {
                 correctionText.textContent = evaluation.correction;
             }
             feedbackText.textContent = evaluation.feedback;
-
-        } catch (err) {
-            showError(errorDiv, err.message);
-        } finally {
-            btnCheck.disabled = false;
-            spinnerCheck.classList.add("hidden");
         }
     });
 }
