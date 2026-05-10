@@ -625,13 +625,23 @@ function initSentenceBuilder() {
     const btnCheck = document.getElementById("btn-check-sentence");
     const spinnerCheck = document.getElementById("sentence-check-spinner");
     const btnReset = document.getElementById("btn-reset-sentence");
+    const btnToggleMode = document.getElementById("btn-toggle-mode");
+    const btnShowAnswer = document.getElementById("btn-show-answer");
     const feedbackCard = document.getElementById("sentence-feedback");
     const feedbackIcon = document.getElementById("sentence-feedback-icon");
     const feedbackText = document.getElementById("sentence-feedback-text");
     const correctionArea = document.getElementById("sentence-correction-area");
     const correctionText = document.getElementById("sentence-correction-text");
 
+    // Mode elements
+    const tileMode = document.getElementById("sentence-tile-mode");
+    const advancedMode = document.getElementById("sentence-advanced-mode");
+    const advancedInput = document.getElementById("sentence-advanced-input");
+    const answerReveal = document.getElementById("sentence-answer-reveal");
+    const answerText = document.getElementById("sentence-answer-text");
+
     let currentExercise = null;
+    let isAdvancedMode = false;
 
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -646,7 +656,15 @@ function initSentenceBuilder() {
         errorDiv.classList.add("hidden");
         workspace.classList.add("hidden");
         feedbackCard.classList.add("hidden");
-        
+        answerReveal.classList.add("hidden");
+
+        // Reset to tile mode on new exercise
+        isAdvancedMode = false;
+        tileMode.classList.remove("hidden");
+        advancedMode.classList.add("hidden");
+        advancedInput.value = "";
+        btnToggleMode.textContent = "Advanced";
+
         btnGenerate.disabled = true;
         spinnerGenerate.classList.remove("hidden");
 
@@ -696,23 +714,63 @@ function initSentenceBuilder() {
         }
     }
 
+    // Reset Words — moves all tiles back to the bank and scrambles their order
     btnReset.addEventListener("click", () => {
         const tiles = Array.from(constructionZone.children);
         tiles.forEach(tile => {
             wordBank.appendChild(tile);
             tile.classList.remove("in-construction");
         });
+        // Scramble tiles in the word bank
+        const allTiles = Array.from(wordBank.children);
+        for (let i = allTiles.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            wordBank.appendChild(allTiles[j]);
+            allTiles[j] = allTiles[i];
+        }
         feedbackCard.classList.add("hidden");
     });
 
+    // Advanced / Tiles toggle
+    btnToggleMode.addEventListener("click", () => {
+        isAdvancedMode = !isAdvancedMode;
+        if (isAdvancedMode) {
+            tileMode.classList.add("hidden");
+            advancedMode.classList.remove("hidden");
+            btnToggleMode.textContent = "Tiles";
+        } else {
+            advancedMode.classList.add("hidden");
+            tileMode.classList.remove("hidden");
+            btnToggleMode.textContent = "Advanced";
+        }
+    });
+
+    // Answer reveal
+    btnShowAnswer.addEventListener("click", () => {
+        if (!currentExercise) return;
+        answerText.textContent = currentExercise.test_sentence;
+        answerReveal.classList.remove("hidden");
+    });
+
+    // Check Answer — works in both tile and advanced mode
     btnCheck.addEventListener("click", async () => {
-        const selectedTiles = Array.from(constructionZone.children);
-        if (selectedTiles.length === 0) {
-            alert("Please build a sentence first.");
-            return;
+        let userSentence = "";
+
+        if (isAdvancedMode) {
+            userSentence = advancedInput.value.trim();
+            if (!userSentence) {
+                alert("Please type a sentence first.");
+                return;
+            }
+        } else {
+            const selectedTiles = Array.from(constructionZone.children);
+            if (selectedTiles.length === 0) {
+                alert("Please build a sentence first.");
+                return;
+            }
+            userSentence = selectedTiles.map(t => t.textContent).join(" ");
         }
 
-        const userSentence = selectedTiles.map(t => t.textContent).join(" ");
         const { model, proficiency } = getGlobalSettings();
 
         btnCheck.disabled = true;
@@ -761,6 +819,7 @@ function initSentenceBuilder() {
         }
     });
 }
+
 /* ── Settings ─────────────────────────────────────────────────── */
 
 function getGlobalSettings() {
