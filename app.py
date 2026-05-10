@@ -297,6 +297,21 @@ def sentence_builder_generate():
 
     try:
         exercise = generate_sentence_exercise(model, topic, proficiency)
+
+        # Persist the generated sentence pair to flash-phrases.json
+        phrases_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "flash-phrases.json")
+        try:
+            with open(phrases_path, "r", encoding="utf-8") as f:
+                phrases = json.load(f)
+            english = exercise.get("english_translation", "")
+            spanish = exercise.get("test_sentence", "")
+            if english and spanish and english not in phrases:
+                phrases[english] = spanish
+                with open(phrases_path, "w", encoding="utf-8") as f:
+                    json.dump(phrases, f, indent=2, ensure_ascii=False)
+        except Exception:
+            pass  # Non-fatal — don't break the exercise if persistence fails
+
         return jsonify(exercise)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
