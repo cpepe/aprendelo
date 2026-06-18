@@ -1,0 +1,357 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		00E5AD30D3D4686A8C14E8B9 /* LlamaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBED6DB692BD3BF95A2B6FC2 /* LlamaService.swift */; };
+		05A829CBE9FB52F3C7AB574E /* app.js in Resources */ = {isa = PBXBuildFile; fileRef = 692A03A25D364291EA43F1D8 /* app.js */; };
+		0C09A3C4AA6B770429186020 /* style.css in Resources */ = {isa = PBXBuildFile; fileRef = 29676A015B2B94FF43100FBB /* style.css */; };
+		0F360E29A5B607E30A6B6637 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A21A3696D27DEE2C906B4AB /* ContentView.swift */; };
+		182E78D293AADA5B9321D26F /* flash-phrases.json in Resources */ = {isa = PBXBuildFile; fileRef = 200C7E60B1196810E3D88577 /* flash-phrases.json */; };
+		3B6C19109192CA2E66D46DB5 /* flash-images.json in Resources */ = {isa = PBXBuildFile; fileRef = 5B45C0CDF8C1F4FEBBE5E07C /* flash-images.json */; };
+		45E452617894E7F1A67E3AA4 /* flashcards.json in Resources */ = {isa = PBXBuildFile; fileRef = EF163603F8ED874715FA42BD /* flashcards.json */; };
+		4B6D032A88BBC0D66D8B50E9 /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = 2B05075B470278B2BCA48307 /* index.html */; };
+		5959B13DBC5C6C9545C94198 /* WebAssets in Resources */ = {isa = PBXBuildFile; fileRef = B7A6715410BAFB5CDF8285AF /* WebAssets */; };
+		733CFD8C84DC057BDF641228 /* WebViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63F1EEBA1D0FF65BB35A1F2 /* WebViewWrapper.swift */; };
+		A257643960B7C345DD70C7FA /* conjugator.js in Resources */ = {isa = PBXBuildFile; fileRef = ED1E271C976A5378FF2C3385 /* conjugator.js */; };
+		BAE8DA5A94B05C26A63C3441 /* favicon.png in Resources */ = {isa = PBXBuildFile; fileRef = 8EACCAD245E76B5676508921 /* favicon.png */; };
+		DCED3AE77B955DCC04F3C34F /* AprendeloApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D040EC0E0E7FF94C958C0E04 /* AprendeloApp.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		200C7E60B1196810E3D88577 /* flash-phrases.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "flash-phrases.json"; sourceTree = "<group>"; };
+		29676A015B2B94FF43100FBB /* style.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = style.css; sourceTree = "<group>"; };
+		2A21A3696D27DEE2C906B4AB /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		2B05075B470278B2BCA48307 /* index.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
+		5B45C0CDF8C1F4FEBBE5E07C /* flash-images.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "flash-images.json"; sourceTree = "<group>"; };
+		60BEB2433223A3C0BE8715F4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		692A03A25D364291EA43F1D8 /* app.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = app.js; sourceTree = "<group>"; };
+		8EACCAD245E76B5676508921 /* favicon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = favicon.png; sourceTree = "<group>"; };
+		B0452EFAEBB54F0148AD0494 /* AprendeloIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AprendeloIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B7A6715410BAFB5CDF8285AF /* WebAssets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WebAssets; path = ios/WebAssets; sourceTree = SOURCE_ROOT; };
+		CBED6DB692BD3BF95A2B6FC2 /* LlamaService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LlamaService.swift; sourceTree = "<group>"; };
+		D040EC0E0E7FF94C958C0E04 /* AprendeloApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AprendeloApp.swift; sourceTree = "<group>"; };
+		ED1E271C976A5378FF2C3385 /* conjugator.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = conjugator.js; sourceTree = "<group>"; };
+		EF163603F8ED874715FA42BD /* flashcards.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = flashcards.json; sourceTree = "<group>"; };
+		F63F1EEBA1D0FF65BB35A1F2 /* WebViewWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewWrapper.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		BE7380AED2120DDE02FB0D27 = {
+			isa = PBXGroup;
+			children = (
+				B7A6715410BAFB5CDF8285AF /* WebAssets */,
+				E1338034CC9AFD86133249B9 /* ios */,
+				F508AFAF92D44BB195E02914 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		DC79B02EDEE980573D38EDE6 /* static */ = {
+			isa = PBXGroup;
+			children = (
+				692A03A25D364291EA43F1D8 /* app.js */,
+				ED1E271C976A5378FF2C3385 /* conjugator.js */,
+				8EACCAD245E76B5676508921 /* favicon.png */,
+				5B45C0CDF8C1F4FEBBE5E07C /* flash-images.json */,
+				200C7E60B1196810E3D88577 /* flash-phrases.json */,
+				EF163603F8ED874715FA42BD /* flashcards.json */,
+				29676A015B2B94FF43100FBB /* style.css */,
+			);
+			path = static;
+			sourceTree = "<group>";
+		};
+		E1338034CC9AFD86133249B9 /* ios */ = {
+			isa = PBXGroup;
+			children = (
+				D040EC0E0E7FF94C958C0E04 /* AprendeloApp.swift */,
+				2A21A3696D27DEE2C906B4AB /* ContentView.swift */,
+				60BEB2433223A3C0BE8715F4 /* Info.plist */,
+				CBED6DB692BD3BF95A2B6FC2 /* LlamaService.swift */,
+				F63F1EEBA1D0FF65BB35A1F2 /* WebViewWrapper.swift */,
+				E2590B5398E6BCA44D835578 /* WebAssets */,
+			);
+			path = ios;
+			sourceTree = "<group>";
+		};
+		E2590B5398E6BCA44D835578 /* WebAssets */ = {
+			isa = PBXGroup;
+			children = (
+				2B05075B470278B2BCA48307 /* index.html */,
+				DC79B02EDEE980573D38EDE6 /* static */,
+			);
+			path = WebAssets;
+			sourceTree = "<group>";
+		};
+		F508AFAF92D44BB195E02914 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B0452EFAEBB54F0148AD0494 /* AprendeloIOS.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		FE9FC73F92A8EEBA26C64299 /* AprendeloIOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 951DC529210ACF1698646FDC /* Build configuration list for PBXNativeTarget "AprendeloIOS" */;
+			buildPhases = (
+				3656ECF8AE39F558B67E8FD4 /* Sources */,
+				53BAA65EC431B2FD56A24B92 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AprendeloIOS;
+			packageProductDependencies = (
+			);
+			productName = AprendeloIOS;
+			productReference = B0452EFAEBB54F0148AD0494 /* AprendeloIOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		9C2361ADAF542AFE7D4CDB49 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+			};
+			buildConfigurationList = 010681D7955799A61C04B32C /* Build configuration list for PBXProject "AprendeloIOS" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = BE7380AED2120DDE02FB0D27;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = F508AFAF92D44BB195E02914 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FE9FC73F92A8EEBA26C64299 /* AprendeloIOS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		53BAA65EC431B2FD56A24B92 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5959B13DBC5C6C9545C94198 /* WebAssets in Resources */,
+				05A829CBE9FB52F3C7AB574E /* app.js in Resources */,
+				A257643960B7C345DD70C7FA /* conjugator.js in Resources */,
+				BAE8DA5A94B05C26A63C3441 /* favicon.png in Resources */,
+				3B6C19109192CA2E66D46DB5 /* flash-images.json in Resources */,
+				182E78D293AADA5B9321D26F /* flash-phrases.json in Resources */,
+				45E452617894E7F1A67E3AA4 /* flashcards.json in Resources */,
+				4B6D032A88BBC0D66D8B50E9 /* index.html in Resources */,
+				0C09A3C4AA6B770429186020 /* style.css in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3656ECF8AE39F558B67E8FD4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DCED3AE77B955DCC04F3C34F /* AprendeloApp.swift in Sources */,
+				0F360E29A5B607E30A6B6637 /* ContentView.swift in Sources */,
+				00E5AD30D3D4686A8C14E8B9 /* LlamaService.swift in Sources */,
+				733CFD8C84DC057BDF641228 /* WebViewWrapper.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		0FDFFCECEA587C51B0B66D2E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = BPZD3HQ8J7;
+				INFOPLIST_FILE = ios/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.aprendelo.AprendeloIOS;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		38FED5FAA7B589C70AFF9827 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		466F7C6E0C10CA80306968A0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		700DE8D9DC8E48F022071E0B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = BPZD3HQ8J7;
+				INFOPLIST_FILE = ios/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.aprendelo.AprendeloIOS;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		010681D7955799A61C04B32C /* Build configuration list for PBXProject "AprendeloIOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				466F7C6E0C10CA80306968A0 /* Debug */,
+				38FED5FAA7B589C70AFF9827 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		951DC529210ACF1698646FDC /* Build configuration list for PBXNativeTarget "AprendeloIOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0FDFFCECEA587C51B0B66D2E /* Debug */,
+				700DE8D9DC8E48F022071E0B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 9C2361ADAF542AFE7D4CDB49 /* Project object */;
+}

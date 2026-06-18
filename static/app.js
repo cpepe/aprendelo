@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initBooklet();
     initTranslate();
     initSentenceBuilder();
+    checkIOSEnvironment();
 });
 
 /* ── Tab Navigation ───────────────────────────────────────────── */
@@ -1015,3 +1016,25 @@ function initSettings() {
         localStorage.setItem("aprendelo_proficiency", profSelect.value);
     });
 }
+
+/* ── Environment Checks ───────────────────────────────────────── */
+
+function checkIOSEnvironment() {
+    // Determine if we are running inside the iOS WKWebView wrapper
+    const isIOSNative = window.webkit && window.webkit.messageHandlers;
+    
+    if (isIOSNative) {
+        console.log("iOS Native Environment detected. Hiding incompatible features.");
+        
+        // Hide Booklet tab and section
+        const bookletTab = document.getElementById("nav-booklet");
+        const bookletSection = document.getElementById("section-booklet");
+        if (bookletTab) bookletTab.style.display = "none";
+        if (bookletSection) bookletSection.style.display = "none";
+
+        // Optional: Remove local disabled warnings since iOS handles this natively
+        const localWarnings = document.querySelectorAll('.local-disabled-message');
+        localWarnings.forEach(w => w.style.display = 'none');
+    }
+}
+

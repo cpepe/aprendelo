@@ -1,0 +1,35 @@
+name: AprendeloIOS
+options:
+  bundleIdPrefix: com.aprendelo
+packages:
+  mlx-swift:
+    url: https://github.com/ml-explore/mlx-swift
+    from: "0.21.0"
+  mlx-swift-lm:
+    url: https://github.com/ml-explore/mlx-swift-lm
+    from: "0.21.0"
+targets:
+  AprendeloIOS:
+    type: application
+    platform: iOS
+    deploymentTarget: "18.0"
+    sources:
+      - path: ios
+      - path: ios/WebAssets
+        type: folder
+        buildPhase: resources
+    dependencies:
+      - package: mlx-swift
+        product: MLX
+      - package: mlx-swift
+        product: MLXRandom
+      - package: mlx-swift-lm
+        product: MLXLLM
+      - package: mlx-swift-lm
+        product: MLXLMCommon
+    info:
+      path: ios/Info.plist
+      properties:
+        UILaunchStoryboardName: LaunchScreen
+        NSLocalNetworkUsageDescription: "Required for offline inference."
+        NSLocalizedDescription: "On first launch the app downloads a compact Llama model (~2 GB) to your device for fully offline AI features."
