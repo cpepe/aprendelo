@@ -1,13 +1,16 @@
 import Foundation
 import MLX
 import MLXLLM
+import MLXHuggingFace
 import MLXLMCommon
 import MLXRandom
+import HuggingFace
+import Tokenizers
 
-/// Manages the on-device Llama model lifecycle and text generation.
+/// Manages the on-device Gemma 4 model lifecycle and text generation.
 /// Uses Apple's MLX framework for Metal/ANE-accelerated inference.
 @MainActor
-class LlamaService: ObservableObject {
+class GemmaService: ObservableObject {
 
     // MARK: - Published State
 
@@ -23,16 +26,16 @@ class LlamaService: ObservableObject {
 
     // MARK: - Model Configuration
 
-    /// 4-bit quantized Llama 3.2 3B — ~1.8 GB download, fits in 4 GB+ iPhone RAM.
-    /// Device requirement: iPhone 12 or newer (A14 Bionic) for reasonable speed.
-    /// Best performance: iPhone 15 Pro+ (A17 Pro) for ~20 tok/s.
+    /// 4-bit quantized Gemma 4 E4B (Effective 4B) — ~2.5 GB download.
+    /// Purpose-built for efficient edge/mobile inference.
+    /// Best performance on iPhone 15 Pro+ (A17 Pro) with 8 GB RAM.
     static let modelConfiguration = ModelConfiguration(
-        id: "mlx-community/Llama-3.2-3B-Instruct-4bit"
+        id: "mlx-community/gemma-4-e2b-it-4bit" //"mlx-community/gemma-4-e4b-it-4bit"
     )
 
-    /// Fallback for older/lower-memory devices: 1B model (~0.7 GB)
+    /// Fallback for older/lower-memory devices: Gemma 4 E2B (~1.2 GB)
     static let lightModelConfiguration = ModelConfiguration(
-        id: "mlx-community/Llama-3.2-1B-Instruct-4bit"
+        id: "mlx-community/gemma-4-e2b-it-4bit"
     )
 
     // MARK: - Private
@@ -56,7 +59,10 @@ class LlamaService: ObservableObject {
         state = .downloading(progress: 0)
 
         do {
+            // v3 API: loadContainer requires explicit downloader + tokenizer loader
             modelContainer = try await LLMModelFactory.shared.loadContainer(
+                from: #hubDownloader(),
+                using: #huggingFaceTokenizerLoader(),
                 configuration: Self.modelConfiguration
             ) { [weak self] progress in
                 Task { @MainActor [weak self] in
@@ -70,10 +76,12 @@ class LlamaService: ObservableObject {
             state = .ready
             resetUnloadTimer()
         } catch {
-            // Try the lighter 1B model as fallback
+            // Try the lighter E2B model as fallback
             do {
                 state = .downloading(progress: 0)
                 modelContainer = try await LLMModelFactory.shared.loadContainer(
+                    from: #hubDownloader(),
+                    using: #huggingFaceTokenizerLoader(),
                     configuration: Self.lightModelConfiguration
                 ) { [weak self] progress in
                     Task { @MainActor [weak self] in
@@ -106,23 +114,24 @@ class LlamaService: ObservableObject {
         resetUnloadTimer()
 
         // Build the full message list with system prompt prepended
-        var fullMessages: [[String: String]] = [["role": "system", "content": systemPrompt]]
-        fullMessages.append(contentsOf: messages)
+        var fullMessages: [[String: any Sendable]] = [["role": "system", "content": systemPrompt]]
+        for msg in messages {
+            fullMessages.append(["role": msg["role"] ?? "user", "content": msg["content"] ?? ""])
+        }
 
         // Run inference on a background executor, stream tokens back
         let _ = try await container.perform { context in
-            let input = try await context.processor.applyChatTemplate(messages: fullMessages)
-
-            var tokenBuffer = ""
-            var isFirst = true
+            // v3 API: wrap messages in UserInput and call processor.prepare()
+            let input = try await context.processor.prepare(
+                input: UserInput(messages: fullMessages)
+            )
 
             return try MLXLMCommon.generate(
                 input: input,
                 parameters: GenerateParameters(temperature: 0.7, topP: 0.9),
                 context: context
             ) { tokens in
-                let newText = context.tokenizer.decode(tokens: tokens)
-                tokenBuffer += newText
+                let newText = context.tokenizer.decode(tokenIds: tokens)
 
                 // Emit tokens in small chunks for smooth streaming
                 Task { @MainActor in
@@ -153,7 +162,7 @@ class LlamaService: ObservableObject {
     private func unload() {
         modelContainer = nil
         state = .idle
-        print("LlamaService: Model unloaded after inactivity.")
+        print("GemmaService: Model unloaded after inactivity.")
     }
 }
 

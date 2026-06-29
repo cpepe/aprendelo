@@ -25,11 +25,16 @@ class TranslationService {
             ($0 == "Auto-detect" || $0.isEmpty) ? nil : Locale.Language(identifier: $0)
         }
 
-        let config = TranslationSession.Configuration(source: source, target: target)
-        let session = TranslationSession(configuration: config)
-
-        let response = try await session.translate(text)
-        return response.targetText
+        if #available(iOS 26.0, *) {
+            guard let source = source else {
+                throw TranslationError.failed("Auto-detect is not supported for offline programmatic translation.")
+            }
+            let session = TranslationSession(installedSource: source, target: target)
+            let response = try await session.translate(text)
+            return response.targetText
+        } else {
+            throw TranslationError.failed("Offline programmatic translation requires iOS 26.0 or later.")
+        }
     }
 }
 

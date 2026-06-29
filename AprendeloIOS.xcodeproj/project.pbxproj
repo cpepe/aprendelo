@@ -7,18 +7,26 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		00E5AD30D3D4686A8C14E8B9 /* LlamaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBED6DB692BD3BF95A2B6FC2 /* LlamaService.swift */; };
+		0350AECF35D5B96DFB2E253C /* MLXHuggingFace in Frameworks */ = {isa = PBXBuildFile; productRef = 5D16185C9962C1EC14E734E1 /* MLXHuggingFace */; };
 		05A829CBE9FB52F3C7AB574E /* app.js in Resources */ = {isa = PBXBuildFile; fileRef = 692A03A25D364291EA43F1D8 /* app.js */; };
+		0B969CAAB7ECEC28D22E70D9 /* MLXLLM in Frameworks */ = {isa = PBXBuildFile; productRef = 2099496428AE6B8DFA5EBCFE /* MLXLLM */; };
 		0C09A3C4AA6B770429186020 /* style.css in Resources */ = {isa = PBXBuildFile; fileRef = 29676A015B2B94FF43100FBB /* style.css */; };
 		0F360E29A5B607E30A6B6637 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A21A3696D27DEE2C906B4AB /* ContentView.swift */; };
+		0F5A53DE0D733B6106170464 /* Tokenizers in Frameworks */ = {isa = PBXBuildFile; productRef = B9593B7CCE1A35D1772C9310 /* Tokenizers */; };
 		182E78D293AADA5B9321D26F /* flash-phrases.json in Resources */ = {isa = PBXBuildFile; fileRef = 200C7E60B1196810E3D88577 /* flash-phrases.json */; };
 		3B6C19109192CA2E66D46DB5 /* flash-images.json in Resources */ = {isa = PBXBuildFile; fileRef = 5B45C0CDF8C1F4FEBBE5E07C /* flash-images.json */; };
 		45E452617894E7F1A67E3AA4 /* flashcards.json in Resources */ = {isa = PBXBuildFile; fileRef = EF163603F8ED874715FA42BD /* flashcards.json */; };
 		4B6D032A88BBC0D66D8B50E9 /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = 2B05075B470278B2BCA48307 /* index.html */; };
+		540DA6ECD5785EAB646E3445 /* MLX in Frameworks */ = {isa = PBXBuildFile; productRef = 6B7EF1043FAA1BB534DF32BD /* MLX */; };
+		5809F7EB98E8B78C230E4240 /* MLXLMCommon in Frameworks */ = {isa = PBXBuildFile; productRef = 1108E9E7219D1B042E6EC036 /* MLXLMCommon */; };
 		5959B13DBC5C6C9545C94198 /* WebAssets in Resources */ = {isa = PBXBuildFile; fileRef = B7A6715410BAFB5CDF8285AF /* WebAssets */; };
 		733CFD8C84DC057BDF641228 /* WebViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63F1EEBA1D0FF65BB35A1F2 /* WebViewWrapper.swift */; };
+		78841C57E7679E5B18904AB4 /* GemmaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E2B444A45B5AA300604118C /* GemmaService.swift */; };
+		9C55B688AD413A8FCBD3ABAC /* TranslationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9666FEBB5ADBF8966CE785AE /* TranslationService.swift */; };
 		A257643960B7C345DD70C7FA /* conjugator.js in Resources */ = {isa = PBXBuildFile; fileRef = ED1E271C976A5378FF2C3385 /* conjugator.js */; };
+		B400F779BFB682273A4E5444 /* MLXRandom in Frameworks */ = {isa = PBXBuildFile; productRef = 975ADEF6ED78FCA4320BCF71 /* MLXRandom */; };
 		BAE8DA5A94B05C26A63C3441 /* favicon.png in Resources */ = {isa = PBXBuildFile; fileRef = 8EACCAD245E76B5676508921 /* favicon.png */; };
+		C2233D107C6FB6A8BFDD1D32 /* HuggingFace in Frameworks */ = {isa = PBXBuildFile; productRef = 439C37D5FDE9DB3FE1A131CA /* HuggingFace */; };
 		DCED3AE77B955DCC04F3C34F /* AprendeloApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D040EC0E0E7FF94C958C0E04 /* AprendeloApp.swift */; };
 /* End PBXBuildFile section */
 
@@ -30,15 +38,33 @@
 		5B45C0CDF8C1F4FEBBE5E07C /* flash-images.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "flash-images.json"; sourceTree = "<group>"; };
 		60BEB2433223A3C0BE8715F4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		692A03A25D364291EA43F1D8 /* app.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = app.js; sourceTree = "<group>"; };
+		6E2B444A45B5AA300604118C /* GemmaService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GemmaService.swift; sourceTree = "<group>"; };
 		8EACCAD245E76B5676508921 /* favicon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = favicon.png; sourceTree = "<group>"; };
+		9666FEBB5ADBF8966CE785AE /* TranslationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationService.swift; sourceTree = "<group>"; };
 		B0452EFAEBB54F0148AD0494 /* AprendeloIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AprendeloIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B7A6715410BAFB5CDF8285AF /* WebAssets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WebAssets; path = ios/WebAssets; sourceTree = SOURCE_ROOT; };
-		CBED6DB692BD3BF95A2B6FC2 /* LlamaService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LlamaService.swift; sourceTree = "<group>"; };
 		D040EC0E0E7FF94C958C0E04 /* AprendeloApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AprendeloApp.swift; sourceTree = "<group>"; };
 		ED1E271C976A5378FF2C3385 /* conjugator.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = conjugator.js; sourceTree = "<group>"; };
 		EF163603F8ED874715FA42BD /* flashcards.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = flashcards.json; sourceTree = "<group>"; };
 		F63F1EEBA1D0FF65BB35A1F2 /* WebViewWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewWrapper.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E0068A338FE663427E94CC1D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				540DA6ECD5785EAB646E3445 /* MLX in Frameworks */,
+				B400F779BFB682273A4E5444 /* MLXRandom in Frameworks */,
+				0B969CAAB7ECEC28D22E70D9 /* MLXLLM in Frameworks */,
+				5809F7EB98E8B78C230E4240 /* MLXLMCommon in Frameworks */,
+				0350AECF35D5B96DFB2E253C /* MLXHuggingFace in Frameworks */,
+				C2233D107C6FB6A8BFDD1D32 /* HuggingFace in Frameworks */,
+				0F5A53DE0D733B6106170464 /* Tokenizers in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		BE7380AED2120DDE02FB0D27 = {
@@ -69,8 +95,9 @@
 			children = (
 				D040EC0E0E7FF94C958C0E04 /* AprendeloApp.swift */,
 				2A21A3696D27DEE2C906B4AB /* ContentView.swift */,
+				6E2B444A45B5AA300604118C /* GemmaService.swift */,
 				60BEB2433223A3C0BE8715F4 /* Info.plist */,
-				CBED6DB692BD3BF95A2B6FC2 /* LlamaService.swift */,
+				9666FEBB5ADBF8966CE785AE /* TranslationService.swift */,
 				F63F1EEBA1D0FF65BB35A1F2 /* WebViewWrapper.swift */,
 				E2590B5398E6BCA44D835578 /* WebAssets */,
 			);
@@ -103,6 +130,7 @@
 			buildPhases = (
 				3656ECF8AE39F558B67E8FD4 /* Sources */,
 				53BAA65EC431B2FD56A24B92 /* Resources */,
+				E0068A338FE663427E94CC1D /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -110,6 +138,13 @@
 			);
 			name = AprendeloIOS;
 			packageProductDependencies = (
+				6B7EF1043FAA1BB534DF32BD /* MLX */,
+				975ADEF6ED78FCA4320BCF71 /* MLXRandom */,
+				2099496428AE6B8DFA5EBCFE /* MLXLLM */,
+				1108E9E7219D1B042E6EC036 /* MLXLMCommon */,
+				5D16185C9962C1EC14E734E1 /* MLXHuggingFace */,
+				439C37D5FDE9DB3FE1A131CA /* HuggingFace */,
+				B9593B7CCE1A35D1772C9310 /* Tokenizers */,
 			);
 			productName = AprendeloIOS;
 			productReference = B0452EFAEBB54F0148AD0494 /* AprendeloIOS.app */;
@@ -133,6 +168,12 @@
 			);
 			mainGroup = BE7380AED2120DDE02FB0D27;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				583B1D1AA56ED89EFD52B9AF /* XCRemoteSwiftPackageReference "mlx-swift" */,
+				E90E94DE716DA554BE1B0ECC /* XCRemoteSwiftPackageReference "mlx-swift-lm" */,
+				FB7669C33BFE92AF9C3774DA /* XCRemoteSwiftPackageReference "swift-huggingface" */,
+				68C3EAF27C35D4C1C1320E34 /* XCRemoteSwiftPackageReference "swift-transformers" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F508AFAF92D44BB195E02914 /* Products */;
 			projectDirPath = "";
@@ -169,7 +210,8 @@
 			files = (
 				DCED3AE77B955DCC04F3C34F /* AprendeloApp.swift in Sources */,
 				0F360E29A5B607E30A6B6637 /* ContentView.swift in Sources */,
-				00E5AD30D3D4686A8C14E8B9 /* LlamaService.swift in Sources */,
+				78841C57E7679E5B18904AB4 /* GemmaService.swift in Sources */,
+				9C55B688AD413A8FCBD3ABAC /* TranslationService.swift in Sources */,
 				733CFD8C84DC057BDF641228 /* WebViewWrapper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -352,6 +394,79 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		583B1D1AA56ED89EFD52B9AF /* XCRemoteSwiftPackageReference "mlx-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ml-explore/mlx-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.31.4;
+			};
+		};
+		68C3EAF27C35D4C1C1320E34 /* XCRemoteSwiftPackageReference "swift-transformers" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/huggingface/swift-transformers";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.3.0;
+			};
+		};
+		E90E94DE716DA554BE1B0ECC /* XCRemoteSwiftPackageReference "mlx-swift-lm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ml-explore/mlx-swift-lm";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.31.3;
+			};
+		};
+		FB7669C33BFE92AF9C3774DA /* XCRemoteSwiftPackageReference "swift-huggingface" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/huggingface/swift-huggingface";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1108E9E7219D1B042E6EC036 /* MLXLMCommon */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E90E94DE716DA554BE1B0ECC /* XCRemoteSwiftPackageReference "mlx-swift-lm" */;
+			productName = MLXLMCommon;
+		};
+		2099496428AE6B8DFA5EBCFE /* MLXLLM */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E90E94DE716DA554BE1B0ECC /* XCRemoteSwiftPackageReference "mlx-swift-lm" */;
+			productName = MLXLLM;
+		};
+		439C37D5FDE9DB3FE1A131CA /* HuggingFace */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FB7669C33BFE92AF9C3774DA /* XCRemoteSwiftPackageReference "swift-huggingface" */;
+			productName = HuggingFace;
+		};
+		5D16185C9962C1EC14E734E1 /* MLXHuggingFace */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E90E94DE716DA554BE1B0ECC /* XCRemoteSwiftPackageReference "mlx-swift-lm" */;
+			productName = MLXHuggingFace;
+		};
+		6B7EF1043FAA1BB534DF32BD /* MLX */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 583B1D1AA56ED89EFD52B9AF /* XCRemoteSwiftPackageReference "mlx-swift" */;
+			productName = MLX;
+		};
+		975ADEF6ED78FCA4320BCF71 /* MLXRandom */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 583B1D1AA56ED89EFD52B9AF /* XCRemoteSwiftPackageReference "mlx-swift" */;
+			productName = MLXRandom;
+		};
+		B9593B7CCE1A35D1772C9310 /* Tokenizers */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 68C3EAF27C35D4C1C1320E34 /* XCRemoteSwiftPackageReference "swift-transformers" */;
+			productName = Tokenizers;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 9C2361ADAF542AFE7D4CDB49 /* Project object */;
 }

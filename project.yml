@@ -4,10 +4,16 @@ options:
 packages:
   mlx-swift:
     url: https://github.com/ml-explore/mlx-swift
-    from: "0.21.0"
+    from: "0.31.4"
   mlx-swift-lm:
     url: https://github.com/ml-explore/mlx-swift-lm
-    from: "0.21.0"
+    from: "3.31.3"
+  swift-huggingface:
+    url: https://github.com/huggingface/swift-huggingface
+    from: "0.9.0"
+  swift-transformers:
+    url: https://github.com/huggingface/swift-transformers
+    from: "1.3.0"
 targets:
   AprendeloIOS:
     type: application
@@ -27,9 +33,15 @@ targets:
         product: MLXLLM
       - package: mlx-swift-lm
         product: MLXLMCommon
+      - package: mlx-swift-lm
+        product: MLXHuggingFace
+      - package: swift-huggingface
+        product: HuggingFace
+      - package: swift-transformers
+        product: Tokenizers
     info:
       path: ios/Info.plist
       properties:
         UILaunchStoryboardName: LaunchScreen
         NSLocalNetworkUsageDescription: "Required for offline inference."
-        NSLocalizedDescription: "On first launch the app downloads a compact Llama model (~2 GB) to your device for fully offline AI features."
+        NSLocalizedDescription: "On first launch the app downloads a compact Gemma 4 model (~2.5 GB) to your device for fully offline AI features."
