@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-        content="Aprendelo — Interactive Spanish learning with flashcards, verb conjugation, AI conversation practice, and bilingual booklet builder.">
+        content="Aprendelo — Interactive Spanish learning with flashcards, verb conjugation, and AI conversation practice.">
     <title>Aprendelo — Learn Spanish</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -42,10 +42,6 @@
             <button class="nav-tab" data-tab="translate" id="nav-translate">
                 <span class="tab-icon">🔤</span>
                 <span class="tab-label">Translator</span>
-            </button>
-            <button class="nav-tab" data-tab="booklet" id="nav-booklet">
-                <span class="tab-icon">📖</span>
-                <span class="tab-label">Booklet</span>
             </button>
 
             <button class="nav-tab" data-tab="tools" id="nav-tools">
@@ -154,82 +150,6 @@
             <!-- %LOCAL_ONLY_END% -->
         </section>
 
-        <!-- ══════════ Booklet Builder ══════════ -->
-        <section id="section-booklet" class="tab-section">
-            <div class="section-header">
-                <h1>Bilingual Booklet Builder</h1>
-                <p class="section-subtitle">Create a parallel bilingual reader (target language left, English right)</p>
-            </div>
-            <div class="local-disabled-message"
-                style="text-align: center; padding: 3rem 1rem; background: var(--bg-surface); border: 1px dashed var(--border); border-radius: var(--radius-lg); margin-top: 1rem;">
-                <h2 style="color: var(--text-muted); margin-bottom: 0.5rem;">Disabled in static site</h2>
-                <p style="color: var(--text-secondary); font-size: 0.95rem;">This advanced feature requires the local
-                    Python server to be running.</p>
-            </div>
-            <!-- %LOCAL_ONLY_START% -->
-            <div class="booklet-container">
-                <form id="booklet-form" class="booklet-form">
-                    <div class="form-grid">
-
-                        <div class="input-field">
-                            <label for="booklet-lang">Target Language</label>
-                            <select id="booklet-lang">
-                                <option value="Spanish" selected>Spanish</option>
-                                <option value="German">German</option>
-                                <option value="French">French</option>
-                            </select>
-                        </div>
-
-                        <div class="input-field">
-                            <label for="booklet-binding">Binding Type</label>
-                            <select id="booklet-binding">
-                                <option value="side_by_side">Side-by-Side (PDF)</option>
-                                <option value="saddle">Saddle Stapled (Booklet)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="file-uploads">
-                        <div class="file-upload-field">
-                            <label for="booklet-english-file">English Text File <span class="required">*</span></label>
-                            <div class="file-drop" id="drop-english">
-                                <input type="file" id="booklet-english-file" accept=".txt" required>
-                                <span class="file-drop-label">📄 Drop .txt file or click to browse</span>
-                                <span class="file-drop-name" id="english-file-name"></span>
-                            </div>
-                        </div>
-                        <div class="file-upload-field">
-                            <label for="booklet-target-file">Target Language Text File <span
-                                    class="optional">(optional)</span></label>
-                            <div class="file-drop" id="drop-target">
-                                <input type="file" id="booklet-target-file" accept=".txt">
-                                <span class="file-drop-label">📄 Drop .txt file or click to browse</span>
-                                <span class="file-drop-name" id="target-file-name"></span>
-                            </div>
-                            <p class="field-help">If provided, no LLM translation is needed.</p>
-                        </div>
-                    </div>
-
-                    <div class="checkbox-field">
-                        <label class="checkbox-label" for="booklet-skip-restructure">
-                            <input type="checkbox" id="booklet-skip-restructure">
-                            <span>Skip text restructuring</span>
-                        </label>
-                        <p class="field-help">Check this if your English text is already formatted with one sentence per
-                            paragraph, or if your LLM struggles with the restructure step.</p>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary btn-lg" id="btn-build-booklet">
-                        <span class="btn-text">Build Booklet</span>
-                        <span class="btn-spinner hidden" id="booklet-spinner"></span>
-                    </button>
-                </form>
-                <div id="booklet-status" class="status-message hidden"></div>
-                <div id="booklet-error" class="error-message hidden"></div>
-            </div>
-            <!-- %LOCAL_ONLY_END% -->
-        </section>
-
         <!-- ══════════ Sentence Builder ══════════ -->
         <section id="section-sentence" class="tab-section">
             <div class="section-header">
@@ -237,7 +157,7 @@
                 <p class="section-subtitle">Practice grammar and vocabulary by building sentences</p>
             </div>
             <div class="sentence-container">
-                <form id="sentence-form" class="booklet-form">
+                <form id="sentence-form" class="tool-form">
                     <div style="display: flex; flex-direction: column; gap: 1rem;">
                         <div class="input-field">
                             <label for="sentence-topic">Topic or Verb</label>
@@ -374,7 +294,7 @@
             </div>
             <!-- %LOCAL_ONLY_START% -->
             <div class="translator-container">
-                <form id="translate-form" class="booklet-form">
+                <form id="translate-form" class="tool-form">
                     <div class="form-grid">
                         <div class="input-field">
                             <label for="translate-source-lang">Source Language</label>
@@ -441,7 +361,7 @@
                                 <option value="">Loading models…</option>
                             </select>
                             <small style="color: var(--text-muted); margin-top: 0.25rem; display: block;">Used for Chat,
-                                Booklet Builder, Translator, and Sentence Builder.</small>
+                                Translator, and Sentence Builder.</small>
                         </div>
                         <div class="input-field">
                             <label for="global-proficiency-select">Default Target Proficiency</label>

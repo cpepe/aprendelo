@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════════
    Aprendelo — Client-Side Application Logic
    Handles: Tab navigation, Flashcards, Conjugation, Chat (SSE),
-            Booklet Builder (file upload + PDF download)
+            Translator, Sentence Builder
    ═══════════════════════════════════════════════════════════════════ */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -10,7 +10,6 @@ document.addEventListener("DOMContentLoaded", () => {
     initFlashcards();
     initConjugation();
     initChat();
-    initBooklet();
     initTranslate();
     initSentenceBuilder();
     checkIOSEnvironment();
@@ -360,111 +359,6 @@ function initChat() {
     }
 }
 
-/* ── Booklet Builder ──────────────────────────────────────────── */
-
-function initBooklet() {
-    const form = document.getElementById("booklet-form");
-    const statusDiv = document.getElementById("booklet-status");
-    const errorDiv = document.getElementById("booklet-error");
-    const btnSubmit = document.getElementById("btn-build-booklet");
-    const spinner = document.getElementById("booklet-spinner");
-    const btnText = btnSubmit.querySelector(".btn-text");
-
-    // File display
-    setupFileDrop("booklet-english-file", "drop-english", "english-file-name");
-    setupFileDrop("booklet-target-file", "drop-target", "target-file-name");
-
-    form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        statusDiv.classList.add("hidden");
-        errorDiv.classList.add("hidden");
-        const { model, proficiency } = getGlobalSettings();
-        const targetLang = document.getElementById("booklet-lang").value;
-        const bindingType = document.getElementById("booklet-binding").value;
-        const englishFile = document.getElementById("booklet-english-file").files[0];
-        const targetFile = document.getElementById("booklet-target-file").files[0];
-        const skipRestructure = document.getElementById("booklet-skip-restructure").checked;
-
-        if (!englishFile) {
-            showError(errorDiv, "Please upload an English text file.");
-            return;
-        }
-
-        if (!targetFile && !model) {
-            alert("Please select an Ollama Model in the Settings tab, or upload a target language file.");
-            return;
-        }
-
-        // Build FormData
-        const formData = new FormData();
-        formData.append("proficiency", proficiency);
-        formData.append("target_lang", targetLang);
-        formData.append("binding_type", bindingType);
-        formData.append("model", model || "");
-        formData.append("skip_restructure", skipRestructure);
-        formData.append("english_file", englishFile);
-        if (targetFile) {
-            formData.append("target_file", targetFile);
-        }
-
-        // UI: loading state
-        btnSubmit.disabled = true;
-        spinner.classList.remove("hidden");
-        btnText.textContent = targetFile ? "Building PDF…" : "Translating & Building…";
-        showStatus(statusDiv, targetFile
-            ? "Generating PDF — this should only take a moment…"
-            : "Translating text with Ollama and generating PDF — this may take a few minutes…"
-        );
-
-        try {
-            const resp = await fetch("/api/booklet/build", {
-                method: "POST",
-                body: formData,
-            });
-
-            if (!resp.ok) {
-                let errMsg = "Build failed.";
-                try {
-                    const errData = await resp.json();
-                    errMsg = errData.error || errMsg;
-                } catch (_) { }
-                showError(errorDiv, errMsg);
-                statusDiv.classList.add("hidden");
-                return;
-            }
-
-            // Download the PDF
-            const blob = await resp.blob();
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-
-            // Extract filename from Content-Disposition or use default
-            const disposition = resp.headers.get("Content-Disposition");
-            let filename = "bilingual_booklet.pdf";
-            if (disposition) {
-                const match = disposition.match(/filename="?(.+?)"?$/);
-                if (match) filename = match[1];
-            }
-
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            URL.revokeObjectURL(url);
-
-            showStatus(statusDiv, `✅ Booklet generated and downloaded as ${filename}`);
-        } catch (err) {
-            showError(errorDiv, `Request failed: ${err.message}`);
-            statusDiv.classList.add("hidden");
-        } finally {
-            btnSubmit.disabled = false;
-            spinner.classList.add("hidden");
-            btnText.textContent = "Build Booklet";
-        }
-    });
-}
-
 /* ── Translator ───────────────────────────────────────────────── */
 
 function initTranslate() {
@@ -602,40 +496,6 @@ async function loadModels(selectElement) {
     }
 }
 
-function setupFileDrop(inputId, dropId, nameId) {
-    const input = document.getElementById(inputId);
-    const drop = document.getElementById(dropId);
-    const nameSpan = document.getElementById(nameId);
-
-    input.addEventListener("change", () => {
-        if (input.files.length > 0) {
-            nameSpan.textContent = input.files[0].name;
-            drop.classList.add("has-file");
-        } else {
-            nameSpan.textContent = "";
-            drop.classList.remove("has-file");
-        }
-    });
-
-    drop.addEventListener("dragover", (e) => {
-        e.preventDefault();
-        drop.classList.add("dragover");
-    });
-
-    drop.addEventListener("dragleave", () => {
-        drop.classList.remove("dragover");
-    });
-
-    drop.addEventListener("drop", (e) => {
-        e.preventDefault();
-        drop.classList.remove("dragover");
-        if (e.dataTransfer.files.length > 0) {
-            input.files = e.dataTransfer.files;
-            nameSpan.textContent = e.dataTransfer.files[0].name;
-            drop.classList.add("has-file");
-        }
-    });
-}
 
 function showError(el, message) {
     el.textContent = message;
@@ -1026,11 +886,11 @@ function checkIOSEnvironment() {
     if (isIOSNative) {
         console.log("iOS Native Environment detected. Hiding incompatible features.");
         
-        // Hide Booklet tab and section
-        const bookletTab = document.getElementById("nav-booklet");
-        const bookletSection = document.getElementById("section-booklet");
-        if (bookletTab) bookletTab.style.display = "none";
-        if (bookletSection) bookletSection.style.display = "none";
+        // Hide Translate tab and section
+        const translateTab = document.getElementById("nav-translate");
+        const translateSection = document.getElementById("section-translate");
+        if (translateTab) translateTab.style.display = "none";
+        if (translateSection) translateSection.style.display = "none";
 
         // Optional: Remove local disabled warnings since iOS handles this natively
         const localWarnings = document.querySelectorAll('.local-disabled-message');

@@ -18,10 +18,6 @@
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
-	<key>NSLocalNetworkUsageDescription</key>
-	<string>Required for offline inference.</string>
-	<key>NSLocalizedDescription</key>
-	<string>On first launch the app downloads a compact Gemma 4 model (~2.5 GB) to your device for fully offline AI features.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 </dict>

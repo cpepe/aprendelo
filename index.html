@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-        content="Aprendelo — Interactive Spanish learning with flashcards, verb conjugation, AI conversation practice, and bilingual booklet builder.">
+        content="Aprendelo — Interactive Spanish learning with flashcards, verb conjugation, and AI conversation practice.">
     <title>Aprendelo — Learn Spanish</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -39,13 +39,13 @@
                 <span class="tab-icon">💬</span>
                 <span class="tab-label">Chat</span>
             </button>
+            <button class="nav-tab" data-tab="quiz" id="nav-quiz">
+                <span class="tab-icon">🎯</span>
+                <span class="tab-label">Quiz</span>
+            </button>
             <button class="nav-tab" data-tab="translate" id="nav-translate">
                 <span class="tab-icon">🔤</span>
                 <span class="tab-label">Translator</span>
-            </button>
-            <button class="nav-tab" data-tab="booklet" id="nav-booklet">
-                <span class="tab-icon">📖</span>
-                <span class="tab-label">Booklet</span>
             </button>
 
             <button class="nav-tab" data-tab="tools" id="nav-tools">
@@ -154,82 +154,6 @@
             <!-- %LOCAL_ONLY_END% -->
         </section>
 
-        <!-- ══════════ Booklet Builder ══════════ -->
-        <section id="section-booklet" class="tab-section">
-            <div class="section-header">
-                <h1>Bilingual Booklet Builder</h1>
-                <p class="section-subtitle">Create a parallel bilingual reader (target language left, English right)</p>
-            </div>
-            <div class="local-disabled-message"
-                style="text-align: center; padding: 3rem 1rem; background: var(--bg-surface); border: 1px dashed var(--border); border-radius: var(--radius-lg); margin-top: 1rem;">
-                <h2 style="color: var(--text-muted); margin-bottom: 0.5rem;">Disabled in static site</h2>
-                <p style="color: var(--text-secondary); font-size: 0.95rem;">This advanced feature requires the local
-                    Python server to be running.</p>
-            </div>
-            <!-- %LOCAL_ONLY_START% -->
-            <div class="booklet-container">
-                <form id="booklet-form" class="booklet-form">
-                    <div class="form-grid">
-
-                        <div class="input-field">
-                            <label for="booklet-lang">Target Language</label>
-                            <select id="booklet-lang">
-                                <option value="Spanish" selected>Spanish</option>
-                                <option value="German">German</option>
-                                <option value="French">French</option>
-                            </select>
-                        </div>
-
-                        <div class="input-field">
-                            <label for="booklet-binding">Binding Type</label>
-                            <select id="booklet-binding">
-                                <option value="side_by_side">Side-by-Side (PDF)</option>
-                                <option value="saddle">Saddle Stapled (Booklet)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="file-uploads">
-                        <div class="file-upload-field">
-                            <label for="booklet-english-file">English Text File <span class="required">*</span></label>
-                            <div class="file-drop" id="drop-english">
-                                <input type="file" id="booklet-english-file" accept=".txt" required>
-                                <span class="file-drop-label">📄 Drop .txt file or click to browse</span>
-                                <span class="file-drop-name" id="english-file-name"></span>
-                            </div>
-                        </div>
-                        <div class="file-upload-field">
-                            <label for="booklet-target-file">Target Language Text File <span
-                                    class="optional">(optional)</span></label>
-                            <div class="file-drop" id="drop-target">
-                                <input type="file" id="booklet-target-file" accept=".txt">
-                                <span class="file-drop-label">📄 Drop .txt file or click to browse</span>
-                                <span class="file-drop-name" id="target-file-name"></span>
-                            </div>
-                            <p class="field-help">If provided, no LLM translation is needed.</p>
-                        </div>
-                    </div>
-
-                    <div class="checkbox-field">
-                        <label class="checkbox-label" for="booklet-skip-restructure">
-                            <input type="checkbox" id="booklet-skip-restructure">
-                            <span>Skip text restructuring</span>
-                        </label>
-                        <p class="field-help">Check this if your English text is already formatted with one sentence per
-                            paragraph, or if your LLM struggles with the restructure step.</p>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary btn-lg" id="btn-build-booklet">
-                        <span class="btn-text">Build Booklet</span>
-                        <span class="btn-spinner hidden" id="booklet-spinner"></span>
-                    </button>
-                </form>
-                <div id="booklet-status" class="status-message hidden"></div>
-                <div id="booklet-error" class="error-message hidden"></div>
-            </div>
-            <!-- %LOCAL_ONLY_END% -->
-        </section>
-
         <!-- ══════════ Sentence Builder ══════════ -->
         <section id="section-sentence" class="tab-section">
             <div class="section-header">
@@ -237,7 +161,7 @@
                 <p class="section-subtitle">Practice grammar and vocabulary by building sentences</p>
             </div>
             <div class="sentence-container">
-                <form id="sentence-form" class="booklet-form">
+                <form id="sentence-form" class="tool-form">
                     <div style="display: flex; flex-direction: column; gap: 1rem;">
                         <div class="input-field">
                             <label for="sentence-topic">Topic or Verb</label>
@@ -330,6 +254,139 @@
             <!-- %LOCAL_ONLY_END% -->
         </section>
 
+        <!-- ══════════ Adaptive Quiz ══════════ -->
+        <section id="section-quiz" class="tab-section">
+            <div class="section-header">
+                <h1>Adaptive Quiz</h1>
+                <p class="section-subtitle">Dynamic 10-question quizzes that adjust difficulty to challenge and reinforce your Spanish</p>
+            </div>
+            <div class="local-disabled-message"
+                style="text-align: center; padding: 3rem 1rem; background: var(--bg-surface); border: 1px dashed var(--border); border-radius: var(--radius-lg); margin-top: 1rem;">
+                <h2 style="color: var(--text-muted); margin-bottom: 0.5rem;">Disabled in static site</h2>
+                <p style="color: var(--text-secondary); font-size: 0.95rem;">This advanced feature requires the local
+                    Python server to be running.</p>
+            </div>
+            <!-- %LOCAL_ONLY_START% -->
+            <div class="quiz-container">
+                <!-- Real-time Level Alert Banner -->
+                <div id="quiz-level-banner" class="quiz-level-banner">
+                    <div class="quiz-banner-icon">🎯</div>
+                    <div class="quiz-banner-text">
+                        <span class="quiz-banner-level" id="quiz-banner-level">Targeting Level B1</span>
+                        <span class="quiz-banner-sub" id="quiz-banner-sub">Questions calibrated to keep you in your growth zone.</span>
+                    </div>
+                </div>
+
+                <!-- Setup Card -->
+                <div id="quiz-setup-view" class="quiz-card">
+                    <form id="quiz-setup-form" class="tool-form">
+                        <div class="form-grid">
+                            <div class="input-field">
+                                <label for="quiz-topic">Quiz Topic (optional)</label>
+                                <input type="text" id="quiz-topic" placeholder="e.g. Subjunctive, Travel, Preterite vs Imperfect">
+                                <small style="color: var(--text-muted); margin-top: 0.25rem;">Leave empty for general Spanish grammar & vocabulary.</small>
+                            </div>
+                            <div class="input-field">
+                                <label for="quiz-level-select">Starting Target Level</label>
+                                <select id="quiz-level-select">
+                                    <option value="A1">A1 — Beginner</option>
+                                    <option value="A2">A2 — Elementary</option>
+                                    <option value="B1" selected>B1 — Intermediate</option>
+                                    <option value="B2">B2 — Upper Intermediate</option>
+                                    <option value="C1">C1 — Advanced</option>
+                                    <option value="C2">C2 — Mastery</option>
+                                </select>
+                                <small style="color: var(--text-muted); margin-top: 0.25rem;">Difficulty will adapt up or down after each 10-question section.</small>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg" id="btn-start-quiz">
+                            <span class="btn-text">Start 10-Question Section</span>
+                            <span class="btn-spinner hidden" id="quiz-start-spinner"></span>
+                        </button>
+                    </form>
+                    <div id="quiz-setup-error" class="error-message hidden" style="margin-top: 1rem;"></div>
+                </div>
+
+                <!-- Active Quiz View -->
+                <div id="quiz-active-view" class="quiz-card hidden">
+                    <!-- Progress Header -->
+                    <div class="quiz-progress-bar-container">
+                        <div class="quiz-progress-info">
+                            <span class="quiz-section-counter" id="quiz-section-counter">Section 1</span>
+                            <span class="quiz-question-counter" id="quiz-question-counter">Question 1 of 10</span>
+                        </div>
+                        <div class="quiz-progress-track">
+                            <div class="quiz-progress-fill" id="quiz-progress-fill" style="width: 10%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Question quick navigator dots -->
+                    <div class="quiz-nav-dots" id="quiz-nav-dots"></div>
+
+                    <!-- Question Card Box -->
+                    <div class="quiz-question-box">
+                        <div class="quiz-question-type-badge" id="quiz-question-type-badge">Multiple Choice</div>
+                        <div class="quiz-question-prompt" id="quiz-question-prompt"></div>
+                        <div class="quiz-question-hint hidden" id="quiz-question-hint"></div>
+
+                        <!-- Dynamic Answer Input Area -->
+                        <div class="quiz-answer-area" id="quiz-answer-area"></div>
+                    </div>
+
+                    <!-- Navigation Action Buttons -->
+                    <div class="quiz-actions-row">
+                        <button type="button" class="btn btn-ghost" id="btn-quiz-prev">← Previous</button>
+                        <button type="button" class="btn btn-secondary" id="btn-quiz-next">Next →</button>
+                        <button type="button" class="btn btn-primary" id="btn-quiz-submit">
+                            <span class="btn-text">Submit Section for Grading 🚀</span>
+                            <span class="btn-spinner hidden" id="quiz-submit-spinner"></span>
+                        </button>
+                    </div>
+
+                    <div id="quiz-active-error" class="error-message hidden" style="margin-top: 1rem;"></div>
+                </div>
+
+                <!-- Section Results View -->
+                <div id="quiz-results-view" class="quiz-card hidden">
+                    <div class="quiz-score-header">
+                        <div class="quiz-score-circle" id="quiz-score-circle">
+                            <span class="quiz-score-num" id="quiz-score-num">0/10</span>
+                            <span class="quiz-score-pct" id="quiz-score-pct">0%</span>
+                        </div>
+                        <div class="quiz-score-details">
+                            <h2 id="quiz-results-title">Section Results</h2>
+                            <p id="quiz-results-summary" class="quiz-results-summary"></p>
+                        </div>
+                    </div>
+
+                    <!-- Level Transition Notification Banner -->
+                    <div id="quiz-transition-alert" class="quiz-level-banner" style="margin: 1.5rem 0;">
+                        <div class="quiz-banner-icon" id="quiz-transition-icon">🎯</div>
+                        <div class="quiz-banner-text">
+                            <span class="quiz-banner-level" id="quiz-transition-level">Targeting Level B1</span>
+                            <span class="quiz-banner-sub" id="quiz-transition-sub"></span>
+                        </div>
+                    </div>
+
+                    <!-- Question Breakdown List -->
+                    <div class="quiz-breakdown-container">
+                        <h3 style="margin-bottom: 1rem; color: var(--text-primary); font-size: 1.15rem;">Section Review & Reinforcement</h3>
+                        <div id="quiz-breakdown-list" class="quiz-breakdown-list"></div>
+                    </div>
+
+                    <!-- Action buttons -->
+                    <div class="quiz-results-actions" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.5rem;">
+                        <button type="button" class="btn btn-primary btn-lg" id="btn-quiz-next-section">
+                            <span class="btn-text" id="btn-quiz-next-text">Start Next Section →</span>
+                            <span class="btn-spinner hidden" id="quiz-next-spinner"></span>
+                        </button>
+                        <button type="button" class="btn btn-ghost btn-lg" id="btn-quiz-new-topic">Change Topic / Settings</button>
+                    </div>
+                </div>
+            </div>
+            <!-- %LOCAL_ONLY_END% -->
+        </section>
+
         <!-- ══════════ Useful Tools ══════════ -->
         <section id="section-tools" class="tab-section">
             <div class="section-header">
@@ -374,7 +431,7 @@
             </div>
             <!-- %LOCAL_ONLY_START% -->
             <div class="translator-container">
-                <form id="translate-form" class="booklet-form">
+                <form id="translate-form" class="tool-form">
                     <div class="form-grid">
                         <div class="input-field">
                             <label for="translate-source-lang">Source Language</label>
@@ -441,7 +498,7 @@
                                 <option value="">Loading models…</option>
                             </select>
                             <small style="color: var(--text-muted); margin-top: 0.25rem; display: block;">Used for Chat,
-                                Booklet Builder, Translator, and Sentence Builder.</small>
+                                Translator, Sentence Builder, and Adaptive Quiz.</small>
                         </div>
                         <div class="input-field">
                             <label for="global-proficiency-select">Default Target Proficiency</label>

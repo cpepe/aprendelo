@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════════
    Aprendelo — Client-Side Application Logic
    Handles: Tab navigation, Flashcards, Conjugation, Chat (SSE),
-            Booklet Builder (file upload + PDF download)
+            Translator, Sentence Builder
    ═══════════════════════════════════════════════════════════════════ */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initFlashcards();
     initConjugation();
     initChat();
-    initBooklet();
+    initQuiz();
     initTranslate();
     initSentenceBuilder();
     checkIOSEnvironment();
@@ -360,111 +360,6 @@ function initChat() {
     }
 }
 
-/* ── Booklet Builder ──────────────────────────────────────────── */
-
-function initBooklet() {
-    const form = document.getElementById("booklet-form");
-    const statusDiv = document.getElementById("booklet-status");
-    const errorDiv = document.getElementById("booklet-error");
-    const btnSubmit = document.getElementById("btn-build-booklet");
-    const spinner = document.getElementById("booklet-spinner");
-    const btnText = btnSubmit.querySelector(".btn-text");
-
-    // File display
-    setupFileDrop("booklet-english-file", "drop-english", "english-file-name");
-    setupFileDrop("booklet-target-file", "drop-target", "target-file-name");
-
-    form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        statusDiv.classList.add("hidden");
-        errorDiv.classList.add("hidden");
-        const { model, proficiency } = getGlobalSettings();
-        const targetLang = document.getElementById("booklet-lang").value;
-        const bindingType = document.getElementById("booklet-binding").value;
-        const englishFile = document.getElementById("booklet-english-file").files[0];
-        const targetFile = document.getElementById("booklet-target-file").files[0];
-        const skipRestructure = document.getElementById("booklet-skip-restructure").checked;
-
-        if (!englishFile) {
-            showError(errorDiv, "Please upload an English text file.");
-            return;
-        }
-
-        if (!targetFile && !model) {
-            alert("Please select an Ollama Model in the Settings tab, or upload a target language file.");
-            return;
-        }
-
-        // Build FormData
-        const formData = new FormData();
-        formData.append("proficiency", proficiency);
-        formData.append("target_lang", targetLang);
-        formData.append("binding_type", bindingType);
-        formData.append("model", model || "");
-        formData.append("skip_restructure", skipRestructure);
-        formData.append("english_file", englishFile);
-        if (targetFile) {
-            formData.append("target_file", targetFile);
-        }
-
-        // UI: loading state
-        btnSubmit.disabled = true;
-        spinner.classList.remove("hidden");
-        btnText.textContent = targetFile ? "Building PDF…" : "Translating & Building…";
-        showStatus(statusDiv, targetFile
-            ? "Generating PDF — this should only take a moment…"
-            : "Translating text with Ollama and generating PDF — this may take a few minutes…"
-        );
-
-        try {
-            const resp = await fetch("/api/booklet/build", {
-                method: "POST",
-                body: formData,
-            });
-
-            if (!resp.ok) {
-                let errMsg = "Build failed.";
-                try {
-                    const errData = await resp.json();
-                    errMsg = errData.error || errMsg;
-                } catch (_) { }
-                showError(errorDiv, errMsg);
-                statusDiv.classList.add("hidden");
-                return;
-            }
-
-            // Download the PDF
-            const blob = await resp.blob();
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-
-            // Extract filename from Content-Disposition or use default
-            const disposition = resp.headers.get("Content-Disposition");
-            let filename = "bilingual_booklet.pdf";
-            if (disposition) {
-                const match = disposition.match(/filename="?(.+?)"?$/);
-                if (match) filename = match[1];
-            }
-
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            URL.revokeObjectURL(url);
-
-            showStatus(statusDiv, `✅ Booklet generated and downloaded as ${filename}`);
-        } catch (err) {
-            showError(errorDiv, `Request failed: ${err.message}`);
-            statusDiv.classList.add("hidden");
-        } finally {
-            btnSubmit.disabled = false;
-            spinner.classList.add("hidden");
-            btnText.textContent = "Build Booklet";
-        }
-    });
-}
-
 /* ── Translator ───────────────────────────────────────────────── */
 
 function initTranslate() {
@@ -602,40 +497,6 @@ async function loadModels(selectElement) {
     }
 }
 
-function setupFileDrop(inputId, dropId, nameId) {
-    const input = document.getElementById(inputId);
-    const drop = document.getElementById(dropId);
-    const nameSpan = document.getElementById(nameId);
-
-    input.addEventListener("change", () => {
-        if (input.files.length > 0) {
-            nameSpan.textContent = input.files[0].name;
-            drop.classList.add("has-file");
-        } else {
-            nameSpan.textContent = "";
-            drop.classList.remove("has-file");
-        }
-    });
-
-    drop.addEventListener("dragover", (e) => {
-        e.preventDefault();
-        drop.classList.add("dragover");
-    });
-
-    drop.addEventListener("dragleave", () => {
-        drop.classList.remove("dragover");
-    });
-
-    drop.addEventListener("drop", (e) => {
-        e.preventDefault();
-        drop.classList.remove("dragover");
-        if (e.dataTransfer.files.length > 0) {
-            input.files = e.dataTransfer.files;
-            nameSpan.textContent = e.dataTransfer.files[0].name;
-            drop.classList.add("has-file");
-        }
-    });
-}
 
 function showError(el, message) {
     el.textContent = message;
@@ -1017,6 +878,440 @@ function initSettings() {
     });
 }
 
+/* ── Adaptive Quiz ────────────────────────────────────────────── */
+
+function initQuiz() {
+    const setupForm = document.getElementById("quiz-setup-form");
+    const setupView = document.getElementById("quiz-setup-view");
+    const activeView = document.getElementById("quiz-active-view");
+    const resultsView = document.getElementById("quiz-results-view");
+    const setupError = document.getElementById("quiz-setup-error");
+    const activeError = document.getElementById("quiz-active-error");
+    const startSpinner = document.getElementById("quiz-start-spinner");
+    const submitSpinner = document.getElementById("quiz-submit-spinner");
+    const nextSpinner = document.getElementById("quiz-next-spinner");
+
+    const bannerLevel = document.getElementById("quiz-banner-level");
+    const bannerSub = document.getElementById("quiz-banner-sub");
+
+    const sectionCounter = document.getElementById("quiz-section-counter");
+    const questionCounter = document.getElementById("quiz-question-counter");
+    const progressFill = document.getElementById("quiz-progress-fill");
+    const navDots = document.getElementById("quiz-nav-dots");
+
+    const qBadge = document.getElementById("quiz-question-type-badge");
+    const qPrompt = document.getElementById("quiz-question-prompt");
+    const qHint = document.getElementById("quiz-question-hint");
+    const answerArea = document.getElementById("quiz-answer-area");
+
+    const btnPrev = document.getElementById("btn-quiz-prev");
+    const btnNext = document.getElementById("btn-quiz-next");
+    const btnSubmit = document.getElementById("btn-quiz-submit");
+    const btnNextSection = document.getElementById("btn-quiz-next-section");
+    const btnNewTopic = document.getElementById("btn-quiz-new-topic");
+
+    if (!setupForm) return;
+
+    let currentSection = 1;
+    let currentTopic = "";
+    let currentLevel = "B1";
+    let questions = [];
+    let userAnswers = {}; // { [id]: string }
+    let currentIndex = 0;
+
+    // Sync initial level select with global setting
+    const { proficiency: defaultProf } = getGlobalSettings();
+    const levelSelect = document.getElementById("quiz-level-select");
+    if (levelSelect && defaultProf) {
+        levelSelect.value = defaultProf;
+    }
+
+    function updateLevelBanner(level, message) {
+        if (bannerLevel) bannerLevel.textContent = `Targeting Level ${level}`;
+        if (bannerSub) bannerSub.textContent = message || "Questions calibrated to keep you in your growth zone.";
+    }
+
+    async function loadSection(topic, level, isNext = false) {
+        const { model } = getGlobalSettings();
+        if (!model) {
+            alert("Please select an Ollama Model in the Settings tab first.");
+            return;
+        }
+
+        const spinner = isNext ? nextSpinner : startSpinner;
+        if (spinner) spinner.classList.remove("hidden");
+        if (setupError) setupError.classList.add("hidden");
+        if (activeError) activeError.classList.add("hidden");
+
+        try {
+            const resp = await fetch("/api/quiz/generate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    model: model,
+                    topic: topic,
+                    proficiency: level,
+                }),
+            });
+
+            if (!resp.ok) {
+                const errData = await resp.json().catch(() => ({}));
+                throw new Error(errData.error || "Failed to generate quiz.");
+            }
+
+            const data = await resp.json();
+            questions = data.questions || [];
+            if (!questions.length) {
+                throw new Error("No questions returned from quiz generator.");
+            }
+
+            currentTopic = topic;
+            currentLevel = level;
+            userAnswers = {};
+            currentIndex = 0;
+
+            updateLevelBanner(currentLevel, `Section ${currentSection} active. Answer all 10 questions to calibrate your next level.`);
+
+            setupView.classList.add("hidden");
+            resultsView.classList.add("hidden");
+            activeView.classList.remove("hidden");
+
+            renderNavDots();
+            renderQuestion(currentIndex);
+        } catch (err) {
+            const errBox = isNext ? activeError : setupError;
+            if (errBox) {
+                showError(errBox, err.message);
+            }
+        } finally {
+            if (spinner) spinner.classList.add("hidden");
+        }
+    }
+
+    setupForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const topic = document.getElementById("quiz-topic").value.trim();
+        const level = document.getElementById("quiz-level-select").value;
+        currentSection = 1;
+        await loadSection(topic, level, false);
+    });
+
+    function renderNavDots() {
+        navDots.innerHTML = "";
+        questions.forEach((q, idx) => {
+            const dot = document.createElement("button");
+            dot.type = "button";
+            dot.className = "quiz-dot";
+            dot.textContent = idx + 1;
+            dot.title = `Question ${idx + 1}`;
+            if (idx === currentIndex) dot.classList.add("active");
+            if (userAnswers[q.id]) dot.classList.add("answered");
+
+            dot.addEventListener("click", () => {
+                saveCurrentAnswer();
+                currentIndex = idx;
+                renderQuestion(currentIndex);
+            });
+            navDots.appendChild(dot);
+        });
+    }
+
+    function saveCurrentAnswer() {
+        const q = questions[currentIndex];
+        if (!q) return;
+
+        if (q.type === "fill_in_blank" || q.type === "short_answer") {
+            const input = document.getElementById(`quiz-input-${q.id}`);
+            if (input) {
+                userAnswers[q.id] = input.value.trim();
+            }
+        }
+        updateDotStatus(currentIndex);
+    }
+
+    function updateDotStatus(idx) {
+        const dots = navDots.querySelectorAll(".quiz-dot");
+        if (dots[idx]) {
+            const q = questions[idx];
+            if (userAnswers[q.id] && userAnswers[q.id].length > 0) {
+                dots[idx].classList.add("answered");
+            } else {
+                dots[idx].classList.remove("answered");
+            }
+        }
+    }
+
+    function renderQuestion(idx) {
+        const q = questions[idx];
+        if (!q) return;
+
+        // Counters & progress
+        sectionCounter.textContent = `Section ${currentSection}`;
+        questionCounter.textContent = `Question ${idx + 1} of ${questions.length}`;
+        const pct = Math.round(((idx + 1) / questions.length) * 100);
+        progressFill.style.width = `${pct}%`;
+
+        // Update active dot
+        const dots = navDots.querySelectorAll(".quiz-dot");
+        dots.forEach((d, i) => {
+            d.classList.toggle("active", i === idx);
+        });
+
+        // Type badge
+        if (q.type === "multiple_choice") {
+            qBadge.textContent = "Multiple Choice";
+        } else if (q.type === "fill_in_blank") {
+            qBadge.textContent = "Fill in the Blank";
+        } else {
+            qBadge.textContent = "Short Answer / Translation";
+        }
+
+        // Prompt & hint
+        qPrompt.textContent = q.question;
+        if (q.hint) {
+            qHint.textContent = `Hint: ${q.hint}`;
+            qHint.classList.remove("hidden");
+        } else {
+            qHint.classList.add("hidden");
+        }
+
+        // Render answer area
+        answerArea.innerHTML = "";
+        const savedAnswer = userAnswers[q.id] || "";
+
+        if (q.type === "multiple_choice") {
+            const grid = document.createElement("div");
+            grid.className = "quiz-options-grid";
+            const letters = ["A", "B", "C", "D"];
+
+            (q.options || []).forEach((opt, optIdx) => {
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.className = "quiz-option-btn";
+                if (savedAnswer === opt) btn.classList.add("selected");
+
+                const letter = document.createElement("span");
+                letter.className = "quiz-option-letter";
+                letter.textContent = letters[optIdx] || String(optIdx + 1);
+
+                const label = document.createElement("span");
+                label.textContent = opt;
+
+                btn.appendChild(letter);
+                btn.appendChild(label);
+
+                btn.addEventListener("click", () => {
+                    grid.querySelectorAll(".quiz-option-btn").forEach(b => b.classList.remove("selected"));
+                    btn.classList.add("selected");
+                    userAnswers[q.id] = opt;
+                    updateDotStatus(idx);
+                });
+                grid.appendChild(btn);
+            });
+            answerArea.appendChild(grid);
+        } else {
+            // Fill in the blank or short answer
+            const input = document.createElement("input");
+            input.type = "text";
+            input.className = "quiz-text-input";
+            input.id = `quiz-input-${q.id}`;
+            input.placeholder = q.type === "fill_in_blank" ? "Type missing word in Spanish..." : "Type your Spanish answer...";
+            input.value = savedAnswer;
+            input.autocomplete = "off";
+
+            input.addEventListener("input", () => {
+                userAnswers[q.id] = input.value.trim();
+                updateDotStatus(idx);
+            });
+            answerArea.appendChild(input);
+            // Auto focus text input for quick typing
+            setTimeout(() => input.focus(), 50);
+        }
+
+        // Prev / Next buttons state
+        btnPrev.disabled = idx === 0;
+        btnNext.disabled = idx === questions.length - 1;
+    }
+
+    btnPrev.addEventListener("click", () => {
+        saveCurrentAnswer();
+        if (currentIndex > 0) {
+            currentIndex--;
+            renderQuestion(currentIndex);
+        }
+    });
+
+    btnNext.addEventListener("click", () => {
+        saveCurrentAnswer();
+        if (currentIndex < questions.length - 1) {
+            currentIndex++;
+            renderQuestion(currentIndex);
+        }
+    });
+
+    btnSubmit.addEventListener("click", async () => {
+        saveCurrentAnswer();
+
+        // Check for unanswered questions
+        const answeredCount = Object.values(userAnswers).filter(a => a && a.length > 0).length;
+        if (answeredCount < questions.length) {
+            const unanswered = questions.length - answeredCount;
+            const confirmSubmit = confirm(`You have ${unanswered} unanswered question(s). Submit section anyway?`);
+            if (!confirmSubmit) return;
+        }
+
+        const { model } = getGlobalSettings();
+        if (!model) {
+            alert("Please select a model in Settings.");
+            return;
+        }
+
+        btnSubmit.disabled = true;
+        submitSpinner.classList.remove("hidden");
+        activeError.classList.add("hidden");
+
+        try {
+            const resp = await fetch("/api/quiz/evaluate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    model: model,
+                    topic: currentTopic,
+                    proficiency: currentLevel,
+                    questions: questions,
+                    answers: userAnswers,
+                }),
+            });
+
+            if (!resp.ok) {
+                const errData = await resp.json().catch(() => ({}));
+                throw new Error(errData.error || "Evaluation failed.");
+            }
+
+            const evalResult = await resp.json();
+            displayResults(evalResult);
+        } catch (err) {
+            showError(activeError, `Evaluation error: ${err.message}`);
+        } finally {
+            btnSubmit.disabled = false;
+            submitSpinner.classList.add("hidden");
+        }
+    });
+
+    function displayResults(data) {
+        activeView.classList.add("hidden");
+        resultsView.classList.remove("hidden");
+
+        const scoreNum = document.getElementById("quiz-score-num");
+        const scorePct = document.getElementById("quiz-score-pct");
+        const titleEl = document.getElementById("quiz-results-title");
+        const summaryEl = document.getElementById("quiz-results-summary");
+
+        const transIcon = document.getElementById("quiz-transition-icon");
+        const transLevel = document.getElementById("quiz-transition-level");
+        const transSub = document.getElementById("quiz-transition-sub");
+        const breakdownList = document.getElementById("quiz-breakdown-list");
+        const nextBtnText = document.getElementById("btn-quiz-next-text");
+
+        scoreNum.textContent = `${data.score}/${data.total}`;
+        scorePct.textContent = `${data.accuracy}%`;
+
+        if (data.accuracy >= 75) {
+            titleEl.textContent = "Outstanding Performance! 🎉";
+        } else if (data.accuracy >= 50) {
+            titleEl.textContent = "Solid Progress! 👏";
+        } else {
+            titleEl.textContent = "Good Effort — Foundations Reinforced! 💪";
+        }
+
+        summaryEl.textContent = data.summary || "Section complete.";
+
+        // Update next level info
+        if (data.level_action === "increase") {
+            transIcon.textContent = "🚀";
+        } else if (data.level_action === "decrease") {
+            transIcon.textContent = "💡";
+        } else {
+            transIcon.textContent = "🎯";
+        }
+
+        transLevel.textContent = `Next Section Target: Level ${data.next_level}`;
+        transSub.textContent = data.level_alert_message;
+        updateLevelBanner(data.next_level, data.level_alert_message);
+
+        // Update currentLevel for the upcoming section
+        currentLevel = data.next_level;
+        nextBtnText.textContent = `Start Section ${currentSection + 1} (Level ${currentLevel}) →`;
+
+        // Render question breakdown list
+        breakdownList.innerHTML = "";
+        (data.results || []).forEach((item, i) => {
+            const card = document.createElement("div");
+            card.className = `quiz-breakdown-item ${item.is_correct ? "correct" : "incorrect"}`;
+
+            const top = document.createElement("div");
+            top.className = "quiz-breakdown-top";
+
+            const qTitle = document.createElement("span");
+            qTitle.className = "quiz-breakdown-q";
+            qTitle.textContent = `${i + 1}. ${item.question}`;
+
+            const status = document.createElement("span");
+            status.className = "quiz-breakdown-status";
+            status.textContent = item.is_correct ? "✓ Correct" : "✗ Incorrect";
+
+            top.appendChild(qTitle);
+            top.appendChild(status);
+
+            const answers = document.createElement("div");
+            answers.className = "quiz-breakdown-answers";
+
+            const userA = document.createElement("div");
+            userA.className = "quiz-user-answer";
+            const userStrong = document.createElement("strong");
+            userStrong.textContent = "Your Answer: ";
+            userA.appendChild(userStrong);
+            userA.appendChild(document.createTextNode(item.user_answer || "(No answer)"));
+
+            const corrA = document.createElement("div");
+            corrA.className = "quiz-correct-answer";
+            const corrStrong = document.createElement("strong");
+            corrStrong.textContent = "Correct Answer: ";
+            corrA.appendChild(corrStrong);
+            corrA.appendChild(document.createTextNode(item.correct_answer));
+
+            answers.appendChild(userA);
+            if (!item.is_correct) {
+                answers.appendChild(corrA);
+            }
+
+            const feedback = document.createElement("div");
+            feedback.className = "quiz-breakdown-feedback";
+            feedback.textContent = `💡 ${item.feedback}`;
+
+            card.appendChild(top);
+            card.appendChild(answers);
+            card.appendChild(feedback);
+            breakdownList.appendChild(card);
+        });
+
+        resultsView.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    btnNextSection.addEventListener("click", async () => {
+        currentSection++;
+        await loadSection(currentTopic, currentLevel, true);
+    });
+
+    btnNewTopic.addEventListener("click", () => {
+        resultsView.classList.add("hidden");
+        activeView.classList.add("hidden");
+        setupView.classList.remove("hidden");
+        updateLevelBanner(currentLevel, "Configure your topic and level to start a new quiz.");
+        setupView.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+}
+
 /* ── Environment Checks ───────────────────────────────────────── */
 
 function checkIOSEnvironment() {
@@ -1026,11 +1321,17 @@ function checkIOSEnvironment() {
     if (isIOSNative) {
         console.log("iOS Native Environment detected. Hiding incompatible features.");
         
-        // Hide Booklet tab and section
-        const bookletTab = document.getElementById("nav-booklet");
-        const bookletSection = document.getElementById("section-booklet");
-        if (bookletTab) bookletTab.style.display = "none";
-        if (bookletSection) bookletSection.style.display = "none";
+        // Hide Translate tab and section
+        const translateTab = document.getElementById("nav-translate");
+        const translateSection = document.getElementById("section-translate");
+        if (translateTab) translateTab.style.display = "none";
+        if (translateSection) translateSection.style.display = "none";
+
+        // Hide Quiz tab and section
+        const quizTab = document.getElementById("nav-quiz");
+        const quizSection = document.getElementById("section-quiz");
+        if (quizTab) quizTab.style.display = "none";
+        if (quizSection) quizSection.style.display = "none";
 
         // Optional: Remove local disabled warnings since iOS handles this natively
         const localWarnings = document.querySelectorAll('.local-disabled-message');

@@ -5,20 +5,23 @@ Flask backend serving the SPA and all API endpoints:
   - Flashcards
   - Verb Conjugation
   - AI Chat (Ollama)
-  - Bilingual Booklet Builder (PDF)
+  - Translation (Ollama)
+  - Sentence Builder (Ollama)
+  - Adaptive Quiz (Ollama)
 """
 
 import json
 import os
 import random
-import tempfile
 
 from flask import (
-    Flask, Response, jsonify, render_template, request, send_file, stream_with_context,
+    Flask, Response, jsonify, render_template, request, stream_with_context,
 )
 import re
-from ollama_client import list_models, chat_stream, translate_text, restructure_for_translation, generate_sentence_exercise, evaluate_sentence
-from booklet_builder import build_bilingual_pdf
+from ollama_client import (
+    list_models, chat_stream, translate_text, generate_sentence_exercise,
+    evaluate_sentence, generate_quiz_section, evaluate_quiz_section,
+)
 
 # ── App setup ────────────────────────────────────────────────────────
 
@@ -177,103 +180,6 @@ def translate_stream():
     )
 
 
-# ── Booklet Builder API ─────────────────────────────────────────────
-
-
-@app.route("/api/booklet/build", methods=["POST"])
-def build_booklet():
-    """
-    Build a bilingual PDF booklet.
-    Expects multipart form data:
-      - proficiency: A1, A2, B1, B2, C1
-      - target_lang: Spanish, German, French
-      - english_file: .txt file upload
-      - target_file: (optional) .txt file upload
-      - binding_type: saddle | side_by_side
-      - model: Ollama model name (required if no target_file)
-    """
-    proficiency = request.form.get("proficiency", "B1")
-    target_lang = request.form.get("target_lang", "Spanish")
-    binding_type = request.form.get("binding_type", "side_by_side")
-    model = request.form.get("model", "")
-    skip_restructure = request.form.get("skip_restructure", "false") == "true"
-
-    # Read English text file
-    english_file = request.files.get("english_file")
-    if not english_file:
-        return jsonify({"error": "Please upload an English text file."}), 400
-
-    try:
-        en_text = english_file.read().decode("utf-8").strip()
-    except Exception:
-        return jsonify({"error": "Could not read the English file. Ensure it is a UTF-8 text file."}), 400
-
-    if not en_text:
-        return jsonify({"error": "The English text file is empty."}), 400
-
-    # Read optional target language file
-    target_file = request.files.get("target_file")
-    target_text = None
-    if target_file and target_file.filename:
-        try:
-            target_text = target_file.read().decode("utf-8").strip()
-        except Exception:
-            return jsonify({"error": "Could not read the target language file."}), 400
-
-    # If no target text provided, restructure English then translate via Ollama
-    if not target_text:
-        if not model:
-            return jsonify({
-                "error": "Please select a model for translation, or upload a target language file."
-            }), 400
-        try:
-            # Step 1: Restructure English into simple, single-idea paragraphs
-            # for better translation alignment (unless skipped by user)
-            if not skip_restructure:
-                en_text = restructure_for_translation(model, en_text)
-        except RuntimeError as e:
-            return jsonify({"error": f"Text restructuring failed: {str(e)}"}), 500
-        try:
-            # Step 2: Translate the restructured text
-            target_text = translate_text(
-                model=model,
-                text=en_text,
-                source_lang="English",
-                target_lang=target_lang,
-                proficiency=proficiency,
-            )
-        except RuntimeError as e:
-            return jsonify({"error": str(e)}), 500
-
-    if not target_text:
-        return jsonify({"error": "Translation produced empty output."}), 500
-
-    # Build PDF
-    try:
-        pdf_bytes = build_bilingual_pdf(
-            en_text=en_text,
-            target_text=target_text,
-            binding_type=binding_type,
-            target_lang=target_lang,
-        )
-    except Exception as e:
-        return jsonify({"error": f"PDF generation failed: {str(e)}"}), 500
-
-    # Write to temp file and send
-    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
-    tmp.write(pdf_bytes)
-    tmp.close()
-
-    lang_code = target_lang[:2].upper()
-    filename = f"bilingual_{lang_code}_EN_{binding_type}.pdf"
-
-    return send_file(
-        tmp.name,
-        mimetype="application/pdf",
-        as_attachment=True,
-        download_name=filename,
-    )
-
 
 # ── Sentence Builder API ───────────────────────────────────────────
 
@@ -341,6 +247,73 @@ def sentence_builder_evaluate():
     try:
         evaluation = evaluate_sentence(model, english_translation, user_sentence, proficiency, words_provided)
         return jsonify(evaluation)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# ── Adaptive Quiz API ───────────────────────────────────────────────
+
+
+@app.route("/api/quiz/generate", methods=["POST"])
+def quiz_generate():
+    """
+    Generate a 10-question adaptive quiz section.
+    Expects JSON: { "topic": "...", "proficiency": "...", "model": "..." }
+    """
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({"error": "Request body must be JSON."}), 400
+
+    topic = data.get("topic", "").strip()
+    proficiency = data.get("proficiency", "B1")
+    model = data.get("model", "")
+
+    if not model:
+        return jsonify({"error": "Please select a model in Settings."}), 400
+
+    try:
+        quiz = generate_quiz_section(model=model, topic=topic, proficiency=proficiency)
+        return jsonify(quiz)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/quiz/evaluate", methods=["POST"])
+def quiz_evaluate():
+    """
+    Evaluate student answers for a 10-question section.
+    Expects JSON: {
+      "model": "...",
+      "topic": "...",
+      "proficiency": "...",
+      "questions": [...],
+      "answers": { "1": "...", ... }
+    }
+    """
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({"error": "Request body must be JSON."}), 400
+
+    topic = data.get("topic", "").strip()
+    proficiency = data.get("proficiency", "B1")
+    model = data.get("model", "")
+    questions = data.get("questions", [])
+    answers = data.get("answers", {})
+
+    if not model:
+        return jsonify({"error": "Please select a model in Settings."}), 400
+    if not questions:
+        return jsonify({"error": "No questions provided to evaluate."}), 400
+
+    try:
+        result = evaluate_quiz_section(
+            model=model,
+            topic=topic,
+            target_level=proficiency,
+            questions=questions,
+            user_answers=answers,
+        )
+        return jsonify(result)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

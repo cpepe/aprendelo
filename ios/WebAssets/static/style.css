@@ -745,13 +745,9 @@ body {
 }
 
 
-/* ── Booklet Builder ──────────────────────────────────────────── */
+/* ── Tool Forms ─────────────────────────────────────────────── */
 
-.booklet-container {
-    max-width: 720px;
-}
-
-.booklet-form {
+.tool-form {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
@@ -761,77 +757,6 @@ body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
-}
-
-.file-uploads {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-}
-
-.file-upload-field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-}
-
-.file-upload-field > label {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-
-.file-drop {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.25rem;
-    padding: 1.5rem 1rem;
-    border: 2px dashed var(--border);
-    border-radius: var(--radius-md);
-    background: var(--bg-surface);
-    cursor: pointer;
-    transition: all var(--duration) var(--ease);
-    min-height: 90px;
-}
-
-.file-drop:hover, .file-drop.dragover {
-    border-color: var(--accent-1);
-    background: var(--accent-glow);
-}
-
-.file-drop.has-file {
-    border-color: var(--success);
-    border-style: solid;
-}
-
-.file-drop input[type="file"] {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    cursor: pointer;
-}
-
-.file-drop-label {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    pointer-events: none;
-}
-
-.file-drop-name {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--success);
-    pointer-events: none;
-}
-
-.field-help {
-    font-size: 0.75rem;
-    color: var(--text-muted);
 }
 
 
