@@ -8,7 +8,9 @@ targets:
     deploymentTarget: "18.0"
     sources:
       - path: ios
-      - path: ios/WebAssets
+      - path: index.html
+        buildPhase: resources
+      - path: static
         type: folder
         buildPhase: resources
     info:

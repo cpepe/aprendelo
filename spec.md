@@ -105,9 +105,8 @@ flowchart TD
 ```
 
 #### 3.1. App Shell & WebView Integration
-*   **Hybrid Wrapping**: Built as a native Swift/SwiftUI application wrapping a modern WebKit `WKWebView`. The entire web frontend (`index.html`, CSS, icons, static assets, and local JSON dictionaries) is packaged as a local directory in the iOS App Bundle.
-*   **Unified Loopback Gateway**: To preserve the modular frontend JavaScript architecture without extensive codebase rewrites, the Swift wrapper spins up a lightweight, highly secure embedded HTTP loopback server (e.g., using `Swifter` or `GCDWebServer` restricted to `127.0.0.1`).
-    *   API requests targeting `/api/*` are captured by the loopback server, executed using native Swift services or static JSON bundle assets, and returned in identical JSON formats.
+*   **Hybrid Wrapping**: Built as a native Swift/SwiftUI application wrapping a modern WebKit `WKWebView`. The web frontend is integrated as a single source of truth: Xcode directly references the root `index.html` and `static/` directory as bundle resources without intermediate copying, ensuring changes are immediately live across both platforms.
+*   **Unified Loopback Gateway**: To preserve the modular frontend JavaScript architecture without extensive codebase rewrites, the Swift wrapper captures API calls and static file requests through `WKURLSchemeHandler` (`aprendelo://host/api/*` and `/static/*`), serving them from native Swift services or bundled offline assets.
 *   **Zero-Config Enforcement**: The static warning masks in `index.html` are stripped automatically at runtime. The web view is fed a virtual runtime environment that reports local API capability as `true` from startup.
 
 #### 3.2. Static Content & Data Bundle Subsystem

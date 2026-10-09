@@ -43,7 +43,10 @@ struct WebViewWrapper: UIViewRepresentable {
 
         let webView = WKWebView(frame: .zero, configuration: configuration)
 
-        if let webAssetsURL = Bundle.main.url(forResource: "WebAssets", withExtension: nil) {
+        let readAccessURL = Bundle.main.resourceURL ?? Bundle.main.bundleURL
+        if let indexURL = Bundle.main.url(forResource: "index", withExtension: "html") {
+            webView.loadFileURL(indexURL, allowingReadAccessTo: readAccessURL)
+        } else if let webAssetsURL = Bundle.main.url(forResource: "WebAssets", withExtension: nil) {
             let indexURL = webAssetsURL.appendingPathComponent("index.html")
             webView.loadFileURL(indexURL, allowingReadAccessTo: webAssetsURL)
         }
@@ -89,15 +92,34 @@ class APISchemeHandler: NSObject, WKURLSchemeHandler {
         tracker.stop(urlSchemeTask)
     }
 
+    // MARK: - Asset Resolution Helper
+
+    private func getAssetURL(for relativePath: String) -> URL? {
+        let cleanPath = relativePath.hasPrefix("/") ? String(relativePath.dropFirst()) : relativePath
+        let baseURL = Bundle.main.resourceURL ?? Bundle.main.bundleURL
+        let directURL = baseURL.appendingPathComponent(cleanPath)
+        if FileManager.default.fileExists(atPath: directURL.path) {
+            return directURL
+        }
+        if let webAssetsURL = Bundle.main.url(forResource: "WebAssets", withExtension: nil) {
+            let fallbackURL = webAssetsURL.appendingPathComponent(cleanPath)
+            if FileManager.default.fileExists(atPath: fallbackURL.path) {
+                return fallbackURL
+            }
+        }
+        return directURL
+    }
+
     // MARK: - Static File Server
 
     private func serveStaticFile(urlSchemeTask: WKURLSchemeTask, url: URL, path: String) {
-        guard let webAssetsURL = Bundle.main.url(forResource: "WebAssets", withExtension: nil) else {
-            urlSchemeTask.didFailWithError(makeError(500))
+        guard let fileURL = getAssetURL(for: path),
+              let data = try? Data(contentsOf: fileURL) else {
+            let response = HTTPURLResponse(url: url, statusCode: 404, httpVersion: nil, headerFields: nil)!
+            urlSchemeTask.didReceive(response)
+            urlSchemeTask.didFinish()
             return
         }
-        let relativePath = String(path.dropFirst())
-        let fileURL = webAssetsURL.appendingPathComponent(relativePath)
 
         guard let data = try? Data(contentsOf: fileURL) else {
             let response = HTTPURLResponse(url: url, statusCode: 404, httpVersion: nil, headerFields: nil)!
@@ -150,8 +172,8 @@ class APISchemeHandler: NSObject, WKURLSchemeHandler {
 
     private func getScenarioResponse(message: String, proficiency: String) -> String {
         guard
-            let webAssetsURL = Bundle.main.url(forResource: "WebAssets", withExtension: nil),
-            let data = try? Data(contentsOf: webAssetsURL.appendingPathComponent("static/chat-scenarios.json")),
+            let scenarioURL = getAssetURL(for: "static/chat-scenarios.json"),
+            let data = try? Data(contentsOf: scenarioURL),
             let scenariosDict = try? JSONSerialization.jsonObject(with: data) as? [String: [[String: Any]]],
             let levelScenarios = scenariosDict[proficiency] ?? scenariosDict["B1"],
             !levelScenarios.isEmpty
@@ -190,8 +212,8 @@ class APISchemeHandler: NSObject, WKURLSchemeHandler {
         tracker.start(urlSchemeTask)
 
         guard
-            let webAssetsURL = Bundle.main.url(forResource: "WebAssets", withExtension: nil),
-            let data = try? Data(contentsOf: webAssetsURL.appendingPathComponent("static/sentence-builder.json")),
+            let sentenceURL = getAssetURL(for: "static/sentence-builder.json"),
+            let data = try? Data(contentsOf: sentenceURL),
             let items = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]],
             !items.isEmpty
         else {

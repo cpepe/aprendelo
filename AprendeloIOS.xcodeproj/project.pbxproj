@@ -7,40 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		05A829CBE9FB52F3C7AB574E /* app.js in Resources */ = {isa = PBXBuildFile; fileRef = 692A03A25D364291EA43F1D8 /* app.js */; };
-		0C09A3C4AA6B770429186020 /* style.css in Resources */ = {isa = PBXBuildFile; fileRef = 29676A015B2B94FF43100FBB /* style.css */; };
 		0F360E29A5B607E30A6B6637 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A21A3696D27DEE2C906B4AB /* ContentView.swift */; };
-		182E78D293AADA5B9321D26F /* flash-phrases.json in Resources */ = {isa = PBXBuildFile; fileRef = 200C7E60B1196810E3D88577 /* flash-phrases.json */; };
-		3B6C19109192CA2E66D46DB5 /* flash-images.json in Resources */ = {isa = PBXBuildFile; fileRef = 5B45C0CDF8C1F4FEBBE5E07C /* flash-images.json */; };
-		45E452617894E7F1A67E3AA4 /* flashcards.json in Resources */ = {isa = PBXBuildFile; fileRef = EF163603F8ED874715FA42BD /* flashcards.json */; };
-		4B6D032A88BBC0D66D8B50E9 /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = 2B05075B470278B2BCA48307 /* index.html */; };
-		5959B13DBC5C6C9545C94198 /* WebAssets in Resources */ = {isa = PBXBuildFile; fileRef = B7A6715410BAFB5CDF8285AF /* WebAssets */; };
+		39200955F05ACC750CA9964D /* static in Resources */ = {isa = PBXBuildFile; fileRef = 474BBF14BD40D09BB676B773 /* static */; };
 		733CFD8C84DC057BDF641228 /* WebViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63F1EEBA1D0FF65BB35A1F2 /* WebViewWrapper.swift */; };
-		9C55B688AD413A8FCBD3ABAC /* TranslationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9666FEBB5ADBF8966CE785AE /* TranslationService.swift */; };
-		A257643960B7C345DD70C7FA /* conjugator.js in Resources */ = {isa = PBXBuildFile; fileRef = ED1E271C976A5378FF2C3385 /* conjugator.js */; };
-		BAE8DA5A94B05C26A63C3441 /* favicon.png in Resources */ = {isa = PBXBuildFile; fileRef = 8EACCAD245E76B5676508921 /* favicon.png */; };
-		C48516DE60E407FE94316A4A /* chat-scenarios.json in Resources */ = {isa = PBXBuildFile; fileRef = 9C7E795464A87A308B4EB98A /* chat-scenarios.json */; };
 		DCED3AE77B955DCC04F3C34F /* AprendeloApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D040EC0E0E7FF94C958C0E04 /* AprendeloApp.swift */; };
-		FDB0E59AFB273674AE786F0F /* sentence-builder.json in Resources */ = {isa = PBXBuildFile; fileRef = 1FCF78424C69D1F74A31DD9D /* sentence-builder.json */; };
+		EA5DBFB612CE70FE43779FD1 /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = 147153BCFA2C6D5859B104AA /* index.html */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		1FCF78424C69D1F74A31DD9D /* sentence-builder.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "sentence-builder.json"; sourceTree = "<group>"; };
-		200C7E60B1196810E3D88577 /* flash-phrases.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "flash-phrases.json"; sourceTree = "<group>"; };
-		29676A015B2B94FF43100FBB /* style.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = style.css; sourceTree = "<group>"; };
+		147153BCFA2C6D5859B104AA /* index.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
 		2A21A3696D27DEE2C906B4AB /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		2B05075B470278B2BCA48307 /* index.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
-		5B45C0CDF8C1F4FEBBE5E07C /* flash-images.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "flash-images.json"; sourceTree = "<group>"; };
+		474BBF14BD40D09BB676B773 /* static */ = {isa = PBXFileReference; lastKnownFileType = folder; path = static; sourceTree = SOURCE_ROOT; };
 		60BEB2433223A3C0BE8715F4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		692A03A25D364291EA43F1D8 /* app.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = app.js; sourceTree = "<group>"; };
-		8EACCAD245E76B5676508921 /* favicon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = favicon.png; sourceTree = "<group>"; };
-		9666FEBB5ADBF8966CE785AE /* TranslationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationService.swift; sourceTree = "<group>"; };
-		9C7E795464A87A308B4EB98A /* chat-scenarios.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "chat-scenarios.json"; sourceTree = "<group>"; };
 		B0452EFAEBB54F0148AD0494 /* AprendeloIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AprendeloIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		B7A6715410BAFB5CDF8285AF /* WebAssets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WebAssets; path = ios/WebAssets; sourceTree = SOURCE_ROOT; };
 		D040EC0E0E7FF94C958C0E04 /* AprendeloApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AprendeloApp.swift; sourceTree = "<group>"; };
-		ED1E271C976A5378FF2C3385 /* conjugator.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = conjugator.js; sourceTree = "<group>"; };
-		EF163603F8ED874715FA42BD /* flashcards.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = flashcards.json; sourceTree = "<group>"; };
 		F63F1EEBA1D0FF65BB35A1F2 /* WebViewWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewWrapper.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -48,26 +28,11 @@
 		BE7380AED2120DDE02FB0D27 = {
 			isa = PBXGroup;
 			children = (
-				B7A6715410BAFB5CDF8285AF /* WebAssets */,
+				147153BCFA2C6D5859B104AA /* index.html */,
+				474BBF14BD40D09BB676B773 /* static */,
 				E1338034CC9AFD86133249B9 /* ios */,
 				F508AFAF92D44BB195E02914 /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		DC79B02EDEE980573D38EDE6 /* static */ = {
-			isa = PBXGroup;
-			children = (
-				692A03A25D364291EA43F1D8 /* app.js */,
-				9C7E795464A87A308B4EB98A /* chat-scenarios.json */,
-				ED1E271C976A5378FF2C3385 /* conjugator.js */,
-				8EACCAD245E76B5676508921 /* favicon.png */,
-				5B45C0CDF8C1F4FEBBE5E07C /* flash-images.json */,
-				200C7E60B1196810E3D88577 /* flash-phrases.json */,
-				EF163603F8ED874715FA42BD /* flashcards.json */,
-				1FCF78424C69D1F74A31DD9D /* sentence-builder.json */,
-				29676A015B2B94FF43100FBB /* style.css */,
-			);
-			path = static;
 			sourceTree = "<group>";
 		};
 		E1338034CC9AFD86133249B9 /* ios */ = {
@@ -76,20 +41,9 @@
 				D040EC0E0E7FF94C958C0E04 /* AprendeloApp.swift */,
 				2A21A3696D27DEE2C906B4AB /* ContentView.swift */,
 				60BEB2433223A3C0BE8715F4 /* Info.plist */,
-				9666FEBB5ADBF8966CE785AE /* TranslationService.swift */,
 				F63F1EEBA1D0FF65BB35A1F2 /* WebViewWrapper.swift */,
-				E2590B5398E6BCA44D835578 /* WebAssets */,
 			);
 			path = ios;
-			sourceTree = "<group>";
-		};
-		E2590B5398E6BCA44D835578 /* WebAssets */ = {
-			isa = PBXGroup;
-			children = (
-				2B05075B470278B2BCA48307 /* index.html */,
-				DC79B02EDEE980573D38EDE6 /* static */,
-			);
-			path = WebAssets;
 			sourceTree = "<group>";
 		};
 		F508AFAF92D44BB195E02914 /* Products */ = {
@@ -128,7 +82,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 1430;
+				LastUpgradeCheck = 2630;
 			};
 			buildConfigurationList = 010681D7955799A61C04B32C /* Build configuration list for PBXProject "AprendeloIOS" */;
 			developmentRegion = en;
@@ -154,17 +108,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5959B13DBC5C6C9545C94198 /* WebAssets in Resources */,
-				05A829CBE9FB52F3C7AB574E /* app.js in Resources */,
-				C48516DE60E407FE94316A4A /* chat-scenarios.json in Resources */,
-				A257643960B7C345DD70C7FA /* conjugator.js in Resources */,
-				BAE8DA5A94B05C26A63C3441 /* favicon.png in Resources */,
-				3B6C19109192CA2E66D46DB5 /* flash-images.json in Resources */,
-				182E78D293AADA5B9321D26F /* flash-phrases.json in Resources */,
-				45E452617894E7F1A67E3AA4 /* flashcards.json in Resources */,
-				4B6D032A88BBC0D66D8B50E9 /* index.html in Resources */,
-				FDB0E59AFB273674AE786F0F /* sentence-builder.json in Resources */,
-				0C09A3C4AA6B770429186020 /* style.css in Resources */,
+				EA5DBFB612CE70FE43779FD1 /* index.html in Resources */,
+				39200955F05ACC750CA9964D /* static in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -177,7 +122,6 @@
 			files = (
 				DCED3AE77B955DCC04F3C34F /* AprendeloApp.swift in Sources */,
 				0F360E29A5B607E30A6B6637 /* ContentView.swift in Sources */,
-				9C55B688AD413A8FCBD3ABAC /* TranslationService.swift in Sources */,
 				733CFD8C84DC057BDF641228 /* WebViewWrapper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -190,7 +134,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = BPZD3HQ8J7;
 				INFOPLIST_FILE = ios/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -238,8 +181,10 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = BPZD3HQ8J7;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -252,6 +197,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
@@ -293,8 +239,10 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = BPZD3HQ8J7;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -314,6 +262,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -325,7 +274,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = BPZD3HQ8J7;
 				INFOPLIST_FILE = ios/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
