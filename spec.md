@@ -10,6 +10,7 @@ The application utilizes a dual-target architecture:
 *   **Web Target (Hybrid Static/Local)**:
     *   **Static Layer**: Features relying purely on deterministic logic or local data (Flashcards and Conjugation) are hosted entirely statically. The UI and these tools operate smoothly on simple static hosts.
     *   **Local Layer (Advanced LLM)**: Deep, generative tools (Chat, Translation, Sentence Builder, Adaptive Quiz) require a local Python/Flask server processing requests to `localhost:11434` (Ollama).
+    *   **Static Fallback for Sentence Builder**: When no local LLM is available (no model selected or server unreachable), the Sentence Builder provides enhanced static capability by gracefully falling back to deterministic local JSON datasets (`flash-phrases-{LEVEL}.json`) matching the user's selected CEFR proficiency level (A1–C2).
     *   **Zero-Config Enforcement**: Instead of the frontend querying for existence of the backend, the initial `index.html` document contains explicit static warnings masking the advanced LLM HTML. When the Python Flask app is run locally, it processes the `index.html` file on server startup, unmasks the advanced features, and securely serves the unified codebase.
 *   **iOS Target (Fully Offline / Zero-Dependency)**:
     *   **Absolute Independence**: The application is packaged as a standalone iOS app that executes all computation and data rendering locally on-device. No network access is required, enabling flight-mode and subway learning. Language Translation and Adaptive Quiz functionalities are completely omitted and hidden in the iOS app.
@@ -23,9 +24,10 @@ The application utilizes a dual-target architecture:
 #### 2.1. Flashcard Mini-Games (Static JavaScript / Native Offline Store)
 *   **Functionality**: Presents interactive flashcards for vocabulary recall testing. The user can flip the card and proceed to the next card.
 *   **Implementation**: Completely stateless in web mode. On iOS, the application hooks into a localized persistent store (browser IndexedDB/localStorage or native SwiftData/CoreData) to track user progress, card review intervals (spaced repetition), and mastery metrics entirely offline.
+*   **Dynamic Level Matching**: All features using flashcards and flash-phrases dynamically resolve and load the dataset corresponding to the user's selected CEFR proficiency level (A1, A2, B1, B2, C1, C2) configured in Settings (e.g., `flashcards-B2.json` and `flash-phrases-B2.json`). Changing the proficiency level dynamically refreshes the active deck to ensure tailored difficulty.
 *   **Mini-Games**:
-    *   **Vocabulary Flashcards (2.1.1)**: Randomizes Spanish:English pairs at the B2 CEFR level using a static `flashcards.json` payload.
-    *   **Flash-phrases (2.1.2)**: Presents English:Spanish phrases at the B2 CEFR level containing common grammar tenses using `flash-phrases.json`.
+    *   **Vocabulary Flashcards (2.1.1)**: Randomizes Spanish:English pairs matching the active CEFR proficiency level using level-specific static datasets (`flashcards-{LEVEL}.json`, e.g., `flashcards-A1.json`, `flashcards-B2.json`, `flashcards-C1.json`).
+    *   **Flash-phrases (2.1.2)**: Presents English:Spanish phrases matching the active CEFR proficiency level using level-specific static datasets (`flash-phrases-{LEVEL}.json`, e.g., `flash-phrases-A1.json`, `flash-phrases-B2.json`, `flash-phrases-C1.json`).
     *   **Flash-images (2.1.3)**: Pair cartoon images of common body parts, animals, and plants with their Spanish translations using `flash-images.json`.
 
 #### 2.2. Verb Conjugation Tool (Deterministic Client-Side Engine)
@@ -43,9 +45,9 @@ The application utilizes a dual-target architecture:
 *   **iOS Target**: No translation functionality is implemented for iOS. The Translator menu item and section are completely hidden on iOS.
 
 #### 2.5. Sentence Builder (Hybrid Static & AI Playground)
-*   **Functionality**: Generates dynamic jumbled-word sentence construction games. When an LLM is active (Web mode), it generates contextual Spanish sentences and distractors. When offline or static (iOS mode), it operates deterministically using static JSON datasets.
-*   **Web Target**: Uses local Flask backend + Ollama for intelligent distractor generation and semantic grading (accepting natural Spanish structural flexibility like dropped pronouns and alternate phrasing).
-*   **iOS Target**: Uses preconfigured sentence templates and distractor pools from static JSON files (`sentence-builder.json` and `flash-phrases.json`) with client-side exact and fuzzy distractor evaluation, saving completed exercises into the local flashcard deck without LLM execution.
+*   **Functionality**: Generates dynamic jumbled-word sentence construction games. When an LLM is active (Web mode), it generates contextual Spanish sentences and distractors. When offline or when no LLM is present, it operates deterministically using static JSON datasets matching the selected proficiency level.
+*   **Web Target**: Uses local Flask backend + Ollama for intelligent distractor generation and semantic grading (accepting natural Spanish structural flexibility like dropped pronouns and alternate phrasing). If no model is configured or if the LLM backend is unreachable, the engine automatically falls back to static JSON mode, loading `flash-phrases-{LEVEL}.json` corresponding to the student's selected CEFR level (A1–C2) to generate sentence prompts and authentic distractors deterministically. When an LLM generates a new sentence pair, the backend persists the pair to `flash-phrases-{proficiency}.json`.
+*   **iOS Target**: Uses preconfigured sentence templates and distractor pools from static JSON files (`sentence-builder.json` and level-specific `flash-phrases-{LEVEL}.json`) with client-side exact and fuzzy distractor evaluation, saving completed exercises into the local flashcard deck without LLM execution.
 
 #### 2.6. Adaptive Quiz Engine (Web Only / LLM-Driven)
 *   **Functionality**:
@@ -110,10 +112,10 @@ flowchart TD
 *   **Zero-Config Enforcement**: The static warning masks in `index.html` are stripped automatically at runtime. The web view is fed a virtual runtime environment that reports local API capability as `true` from startup.
 
 #### 3.2. Static Content & Data Bundle Subsystem
-*   **Data Bundle Engine**: Replaces on-device LLM inference (such as MLX / llama.cpp / Gemma) with lightweight, preconfigured JSON datasets (`chat-scenarios.json`, `sentence-builder.json`, `flashcards.json`, `flash-phrases.json`, `flash-images.json`) bundled directly inside the iOS app package.
+*   **Data Bundle Engine**: Replaces on-device LLM inference (such as MLX / llama.cpp / Gemma) with lightweight, preconfigured JSON datasets (`chat-scenarios.json`, `sentence-builder.json`, `flashcards-{A1..C2}.json`, `flash-phrases-{A1..C2}.json`, `flash-images.json`) bundled directly inside the iOS app package.
 *   **Preconfigured Content Schemas**:
     *   **Chat Scenarios**: Branching dialogue trees per CEFR level with prompt options, expected target responses, and pre-computed translations.
-    *   **Sentence Builder**: Curated sentence templates with tokenized jumbled word pools and distractor sets.
+    *   **Sentence Builder & Flashcards**: Curated sentence templates, distractor pools, and vocabulary/phrase datasets organized by CEFR proficiency level (A1 to C2).
 *   **Performance & System Stability**:
     *   **Zero RAM Overhead & Cold Starts**: Eliminates ~2.5GB model downloads and large RAM allocations, launching instantly.
     *   **High Stability**: Eliminates battery drain and iOS memory limit terminations (Jetsam events) completely across all iOS hardware generations.

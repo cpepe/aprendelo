@@ -44,15 +44,15 @@ function initFlashcards() {
     const btnNext = document.getElementById("btn-next-card");
     const subtabContainer = document.getElementById("flashcard-subtabs");
 
-    // Game configurations — the single engine renders all three
+    // Game configurations — dynamic file resolution based on selected proficiency
     const GAMES = [
-        { id: "flashcards", file: "./static/flashcards.json", frontLabel: "Español", backLabel: "English", mode: "text" },
-        { id: "flash-phrases", file: "./static/flash-phrases.json", frontLabel: "English", backLabel: "Español", mode: "text" },
-        { id: "flash-images", file: "./static/flash-images.json", frontLabel: "Image", backLabel: "Español", mode: "image" },
+        { id: "flashcards", getFile: (prof) => `./static/flashcards-${prof}.json`, frontLabel: "Español", backLabel: "English", mode: "text" },
+        { id: "flash-phrases", getFile: (prof) => `./static/flash-phrases-${prof}.json`, frontLabel: "English", backLabel: "Español", mode: "text" },
+        { id: "flash-images", getFile: () => "./static/flash-images.json", frontLabel: "Image", backLabel: "Español", mode: "image" },
     ];
 
     let currentGameIndex = 0;
-    const dataCache = {}; // keyed by game id
+    const dataCache = {}; // keyed by `${game.id}_${prof}`
 
     function flipCard() {
         card.classList.toggle("flipped");
@@ -60,12 +60,22 @@ function initFlashcards() {
 
     async function ensureData() {
         const game = GAMES[currentGameIndex];
-        if (dataCache[game.id]) return dataCache[game.id];
+        const { proficiency } = getGlobalSettings();
+        const prof = proficiency || "B1";
+        const cacheKey = `${game.id}_${prof}`;
+
+        if (dataCache[cacheKey]) return dataCache[cacheKey];
         try {
-            const resp = await fetch(game.file);
-            dataCache[game.id] = await resp.json();
-            return dataCache[game.id];
+            const filePath = game.getFile ? game.getFile(prof) : game.file;
+            const resp = await fetch(filePath);
+            if (!resp.ok) {
+                console.error(`Failed to fetch ${filePath}: HTTP ${resp.status}`);
+                return null;
+            }
+            dataCache[cacheKey] = await resp.json();
+            return dataCache[cacheKey];
         } catch (err) {
+            console.error(`Failed to load data for ${game.id} (${prof}):`, err);
             return null;
         }
     }
@@ -109,6 +119,11 @@ function initFlashcards() {
             }
         }, 150);
     }
+
+    // Refresh active card when global proficiency changes
+    window.addEventListener("aprendelo_proficiency_change", () => {
+        loadCard();
+    });
 
     // Sub-tab switching
     subtabContainer.addEventListener("click", (e) => {
@@ -514,24 +529,29 @@ function scrollToBottom(el) {
 
 /* ── Sentence Builder Static Fallback ─────────────────────────── */
 
-let cachedFlashPhrases = null;
+const cachedFlashPhrases = {};
 
-async function loadFlashPhrases() {
-    if (cachedFlashPhrases) return cachedFlashPhrases;
+async function loadFlashPhrases(proficiency) {
+    const prof = proficiency || getGlobalSettings().proficiency || "B1";
+    if (cachedFlashPhrases[prof]) return cachedFlashPhrases[prof];
     try {
-        const resp = await fetch("./static/flash-phrases.json");
-        cachedFlashPhrases = await resp.json();
-        return cachedFlashPhrases;
+        const resp = await fetch(`./static/flash-phrases-${prof}.json`);
+        if (!resp.ok) {
+            throw new Error(`HTTP ${resp.status}`);
+        }
+        cachedFlashPhrases[prof] = await resp.json();
+        return cachedFlashPhrases[prof];
     } catch (err) {
-        console.error("Failed to load flash-phrases.json", err);
+        console.error(`Failed to load flash-phrases-${prof}.json`, err);
         return null;
     }
 }
 
-async function generateStaticExercise() {
-    const phrases = await loadFlashPhrases();
+async function generateStaticExercise(proficiency) {
+    const prof = proficiency || getGlobalSettings().proficiency || "B1";
+    const phrases = await loadFlashPhrases(prof);
     if (!phrases || Object.keys(phrases).length === 0) {
-        throw new Error("No phrases available for static fallback.");
+        throw new Error(`No phrases available for static fallback (Level ${prof}).`);
     }
     
     const entries = Object.entries(phrases);
@@ -661,7 +681,7 @@ function initSentenceBuilder() {
         } catch (err) {
             console.warn(err.message, "Using static fallback.");
             try {
-                currentExercise = await generateStaticExercise();
+                currentExercise = await generateStaticExercise(proficiency);
                 isStaticMode = true;
             } catch (staticErr) {
                 showError(errorDiv, "Failed to generate exercise in static mode. " + staticErr.message);
@@ -875,6 +895,7 @@ function initSettings() {
 
     profSelect.addEventListener("change", () => {
         localStorage.setItem("aprendelo_proficiency", profSelect.value);
+        window.dispatchEvent(new CustomEvent("aprendelo_proficiency_change", { detail: profSelect.value }));
     });
 }
 
