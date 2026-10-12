@@ -104,18 +104,34 @@ function initFlashcards() {
 
         const randomKey = keys[Math.floor(Math.random() * keys.length)];
 
+        function setCardText(el, text) {
+            el.textContent = text;
+            el.style.fontSize = "";
+            el.className = "card-word";
+            const len = (text || "").length;
+            if (len > 120) {
+                el.classList.add("text-xlong");
+            } else if (len > 60) {
+                el.classList.add("text-long");
+            } else if (len > 28) {
+                el.classList.add("text-medium");
+            }
+        }
+
         // Small delay so the un-flip animation finishes
         setTimeout(() => {
             if (game.mode === "image") {
                 // Image mode: front = emoji/image, back = Spanish word
                 frontWord.textContent = randomKey;
                 frontWord.style.fontSize = "4rem";
+                frontWord.className = "card-word";
                 backWord.textContent = data[randomKey];
+                backWord.style.fontSize = "";
+                backWord.className = "card-word";
             } else {
-                // Text mode: front = Spanish, back = English
-                frontWord.textContent = randomKey;
-                frontWord.style.fontSize = "";
-                backWord.textContent = data[randomKey];
+                // Text mode: front = Spanish/English, back = translation
+                setCardText(frontWord, randomKey);
+                setCardText(backWord, data[randomKey]);
             }
         }, 150);
     }
@@ -140,6 +156,9 @@ function initFlashcards() {
         frontWord.textContent = "";
         backWord.textContent = "";
         frontWord.style.fontSize = "";
+        backWord.style.fontSize = "";
+        frontWord.className = "card-word";
+        backWord.className = "card-word";
         loadCard();
     });
 
