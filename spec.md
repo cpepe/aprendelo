@@ -26,9 +26,9 @@ The application utilizes a dual-target architecture:
 *   **Implementation**: Completely stateless in web mode. On iOS, the application hooks into a localized persistent store (browser IndexedDB/localStorage or native SwiftData/CoreData) to track user progress, card review intervals (spaced repetition), and mastery metrics entirely offline.
 *   **Dynamic Level Matching**: All features using flashcards and flash-phrases dynamically resolve and load the dataset corresponding to the user's selected CEFR proficiency level (A1, A2, B1, B2, C1, C2) configured in Settings (e.g., `flashcards-B2.json` and `flash-phrases-B2.json`). Changing the proficiency level dynamically refreshes the active deck to ensure tailored difficulty.
 *   **Mini-Games**:
-    *   **Vocabulary Flashcards (2.1.1)**: Randomizes Spanish:English pairs matching the active CEFR proficiency level using level-specific static datasets (`flashcards-{LEVEL}.json`, e.g., `flashcards-A1.json`, `flashcards-B2.json`, `flashcards-C1.json`).
-    *   **Flash-phrases (2.1.2)**: Presents English:Spanish phrases matching the active CEFR proficiency level using level-specific static datasets (`flash-phrases-{LEVEL}.json`, e.g., `flash-phrases-A1.json`, `flash-phrases-B2.json`, `flash-phrases-C1.json`).
-    *   **Flash-images (2.1.3)**: Pair cartoon images of common body parts, animals, and plants with their Spanish translations using `flash-images.json`.
+    *   **Vocabulary Flashcards (2.1.1)**: Randomizes Spanish:English pairs matching the active CEFR proficiency level using level-specific static datasets (`flashcards-{LEVEL}.json`, e.g., `flashcards-A1.json`, `flashcards-B2.json`, `flashcards-C1.json`). Each card draw selects a random entry from the dataset.
+    *   **Flash-phrases (2.1.2)**: Randomizes English:Spanish phrases matching the active CEFR proficiency level using level-specific static datasets (`flash-phrases-{LEVEL}.json`, e.g., `flash-phrases-A1.json`, `flash-phrases-B2.json`, `flash-phrases-C1.json`). Each card draw selects a random entry from the dataset.
+    *   **Flash-images (2.1.3)**: Randomly pairs cartoon images of common body parts, animals, and plants with their Spanish translations using `flash-images.json`.
 
 #### 2.2. Verb Conjugation Tool (Deterministic Client-Side Engine)
 *   **Functionality**: Users input a Spanish verb (e.g., *hablar*). The tool instantly returns the conjugated forms for all pronouns in key tenses (Presente, Pretérito, Imperfecto, Futuro), highlights irregular forms, and provides English translations for each conjugated state.
@@ -37,7 +37,7 @@ The application utilizes a dual-target architecture:
 #### 2.3. Conversational Practice (Web: AI Chat / iOS: Scenario Dialogue Engine)
 *   **Functionality**: Interactive conversational interface designed to practice Spanish at a selected CEFR proficiency level (A1-C2).
 *   **Web Target**: Streams open-ended AI tutor responses from the Flask backend via Server-Sent Events (SSE), which communicates with the local Ollama daemon.
-*   **iOS Target (Preconfigured Scenarios)**: Operates purely offline using structured, interactive dialogue scenarios loaded from static JSON files (`chat-scenarios.json`). Users choose or assemble responses from branching conversational paths with instant pre-authored feedback, eliminating on-device LLM memory and latency overhead.
+*   **iOS Target (Preconfigured Scenarios)**: Operates purely offline using structured, interactive dialogue scenarios loaded from static JSON files (`chat-scenarios.json`). A random scenario is selected on each interaction. Users choose or assemble responses from branching conversational paths with instant pre-authored feedback, eliminating on-device LLM memory and latency overhead.
 
 #### 2.4. Language Translator
 *   **Functionality**: Instant side-by-side string translation. Clears context instantly when the prompt is cleared to ensure a clean prompt interface.
@@ -46,8 +46,8 @@ The application utilizes a dual-target architecture:
 
 #### 2.5. Sentence Builder (Hybrid Static & AI Playground)
 *   **Functionality**: Generates dynamic jumbled-word sentence construction games. When an LLM is active (Web mode), it generates contextual Spanish sentences and distractors. When offline or when no LLM is present, it operates deterministically using static JSON datasets matching the selected proficiency level.
-*   **Web Target**: Uses local Flask backend + Ollama for intelligent distractor generation and semantic grading (accepting natural Spanish structural flexibility like dropped pronouns and alternate phrasing). If no model is configured or if the LLM backend is unreachable, the engine automatically falls back to static JSON mode, loading `flash-phrases-{LEVEL}.json` corresponding to the student's selected CEFR level (A1–C2) to generate sentence prompts and authentic distractors deterministically. When an LLM generates a new sentence pair, the backend persists the pair to `flash-phrases-{proficiency}.json`.
-*   **iOS Target**: Uses preconfigured sentence templates and distractor pools from static JSON files (`sentence-builder.json` and level-specific `flash-phrases-{LEVEL}.json`) with client-side exact and fuzzy distractor evaluation, saving completed exercises into the local flashcard deck without LLM execution.
+*   **Web Target**: Uses local Flask backend + Ollama for intelligent distractor generation and semantic grading (accepting natural Spanish structural flexibility like dropped pronouns and alternate phrasing). If no model is configured or if the LLM backend is unreachable, the engine automatically falls back to static JSON mode, randomly selecting an entry from `flash-phrases-{LEVEL}.json` corresponding to the student's selected CEFR level (A1–C2) to generate sentence prompts and authentic distractors deterministically. When an LLM generates a new sentence pair, the backend persists the pair to `flash-phrases-{proficiency}.json`.
+*   **iOS Target**: Uses preconfigured sentence templates and distractor pools from static JSON files (`sentence-builder.json` and level-specific `flash-phrases-{LEVEL}.json`) with randomized selection and shuffled word tiles, plus client-side exact and fuzzy distractor evaluation, saving completed exercises into the local flashcard deck without LLM execution.
 
 #### 2.6. Adaptive Quiz Engine (Web Only / LLM-Driven)
 *   **Functionality**:
