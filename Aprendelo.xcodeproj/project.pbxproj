@@ -10,6 +10,7 @@
 		0F360E29A5B607E30A6B6637 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A21A3696D27DEE2C906B4AB /* ContentView.swift */; };
 		39200955F05ACC750CA9964D /* static in Resources */ = {isa = PBXBuildFile; fileRef = 474BBF14BD40D09BB676B773 /* static */; };
 		733CFD8C84DC057BDF641228 /* WebViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63F1EEBA1D0FF65BB35A1F2 /* WebViewWrapper.swift */; };
+		B1514F67309E43A9002F6490 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B1514F66309E43A9002F6490 /* Assets.xcassets */; };
 		DCED3AE77B955DCC04F3C34F /* AprendeloApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D040EC0E0E7FF94C958C0E04 /* AprendeloApp.swift */; };
 		EA5DBFB612CE70FE43779FD1 /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = 147153BCFA2C6D5859B104AA /* index.html */; };
 /* End PBXBuildFile section */
@@ -19,7 +20,8 @@
 		2A21A3696D27DEE2C906B4AB /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		474BBF14BD40D09BB676B773 /* static */ = {isa = PBXFileReference; lastKnownFileType = folder; path = static; sourceTree = SOURCE_ROOT; };
 		60BEB2433223A3C0BE8715F4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		B0452EFAEBB54F0148AD0494 /* AprendeloIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AprendeloIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B0452EFAEBB54F0148AD0494 /* Aprendelo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Aprendelo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B1514F66309E43A9002F6490 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D040EC0E0E7FF94C958C0E04 /* AprendeloApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AprendeloApp.swift; sourceTree = "<group>"; };
 		F63F1EEBA1D0FF65BB35A1F2 /* WebViewWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewWrapper.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -39,6 +41,7 @@
 			isa = PBXGroup;
 			children = (
 				D040EC0E0E7FF94C958C0E04 /* AprendeloApp.swift */,
+				B1514F66309E43A9002F6490 /* Assets.xcassets */,
 				2A21A3696D27DEE2C906B4AB /* ContentView.swift */,
 				60BEB2433223A3C0BE8715F4 /* Info.plist */,
 				F63F1EEBA1D0FF65BB35A1F2 /* WebViewWrapper.swift */,
@@ -49,7 +52,7 @@
 		F508AFAF92D44BB195E02914 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				B0452EFAEBB54F0148AD0494 /* AprendeloIOS.app */,
+				B0452EFAEBB54F0148AD0494 /* Aprendelo.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -57,9 +60,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		FE9FC73F92A8EEBA26C64299 /* AprendeloIOS */ = {
+		FE9FC73F92A8EEBA26C64299 /* Aprendelo */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 951DC529210ACF1698646FDC /* Build configuration list for PBXNativeTarget "AprendeloIOS" */;
+			buildConfigurationList = 951DC529210ACF1698646FDC /* Build configuration list for PBXNativeTarget "Aprendelo" */;
 			buildPhases = (
 				3656ECF8AE39F558B67E8FD4 /* Sources */,
 				53BAA65EC431B2FD56A24B92 /* Resources */,
@@ -68,11 +71,11 @@
 			);
 			dependencies = (
 			);
-			name = AprendeloIOS;
+			name = Aprendelo;
 			packageProductDependencies = (
 			);
 			productName = AprendeloIOS;
-			productReference = B0452EFAEBB54F0148AD0494 /* AprendeloIOS.app */;
+			productReference = B0452EFAEBB54F0148AD0494 /* Aprendelo.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -84,7 +87,7 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 2630;
 			};
-			buildConfigurationList = 010681D7955799A61C04B32C /* Build configuration list for PBXProject "AprendeloIOS" */;
+			buildConfigurationList = 010681D7955799A61C04B32C /* Build configuration list for PBXProject "Aprendelo" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -98,7 +101,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				FE9FC73F92A8EEBA26C64299 /* AprendeloIOS */,
+				FE9FC73F92A8EEBA26C64299 /* Aprendelo */,
 			);
 		};
 /* End PBXProject section */
@@ -109,6 +112,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EA5DBFB612CE70FE43779FD1 /* index.html in Resources */,
+				B1514F67309E43A9002F6490 /* Assets.xcassets in Resources */,
 				39200955F05ACC750CA9964D /* static in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -133,14 +137,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = ios/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.aprendelo.AprendeloIOS;
+				PRODUCT_NAME = Aprendelo;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -273,14 +280,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = ios/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.aprendelo.AprendeloIOS;
+				PRODUCT_NAME = Aprendelo;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -289,7 +299,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		010681D7955799A61C04B32C /* Build configuration list for PBXProject "AprendeloIOS" */ = {
+		010681D7955799A61C04B32C /* Build configuration list for PBXProject "Aprendelo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				466F7C6E0C10CA80306968A0 /* Debug */,
@@ -298,7 +308,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		951DC529210ACF1698646FDC /* Build configuration list for PBXNativeTarget "AprendeloIOS" */ = {
+		951DC529210ACF1698646FDC /* Build configuration list for PBXNativeTarget "Aprendelo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0FDFFCECEA587C51B0B66D2E /* Debug */,
